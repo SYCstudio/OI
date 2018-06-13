@@ -50,7 +50,7 @@ int main()
 		for (int i=0;i<=15;i++)
 			if (((key1&(1<<i))==0)&&((key2&(1<<i))==0))
 				if (dfs(key1|(1<<i),key2,1)==1){
-					printf("(%d %d)\n",i/4,i%4);flag=1;break;
+					printf("(%d,%d)\n",i/4,i%4);flag=1;break;
 				}
 		if (flag==0) printf("#####\n");
 	}
