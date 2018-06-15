@@ -5,12 +5,13 @@
 #include<algorithm>
 #include<string>
 #include<set>
+#include<vector>
 using namespace std;
 
 #define ll long long
 #define mem(Arr,x) memset(Arr,x,sizeof(Arr))
 
-const int maxN=101000;
+const int maxN=201000;
 const int maxAlpha=26;
 const int inf=2147483647;
 
@@ -27,8 +28,10 @@ int nodecnt=1,root=1,last=1;
 string str[maxN];
 Node S[maxN<<1];
 int Sorter[maxN<<1],Id[maxN<<1];
+vector<int> Son[maxN];
 
 void Insert(int c,int id);
+void dfs(int u);
 
 int main()
 {
@@ -42,6 +45,8 @@ int main()
 		for (int j=0;j<str[i].size();j++) Insert(str[i][j]-'a',i);
 	}
 
+	//cout<<nodecnt<<" "<<endl;
+	
 	/*
 	for (int i=1;i<=nodecnt;i++)
 		for (int j=0;j<maxAlpha;j++)
@@ -63,6 +68,7 @@ int main()
 		return 0;
 	}
 
+	/*
 	for (int i=1;i<=nodecnt;i++) Sorter[S[i].len]++;
 	for (int i=1;i<=nodecnt;i++) Sorter[i]+=Sorter[i-1];
 	for (int i=nodecnt;i>=1;i--) Id[Sorter[S[i].len]--]=i;
@@ -70,7 +76,13 @@ int main()
 	for (int i=nodecnt;i>=1;i--)
 		for (set<int>::iterator it=S[Id[i]].Id.begin();it!=S[Id[i]].Id.end();it++)
 			S[S[Id[i]].fa].Id.insert((*it));
+	//*/
 
+	for (int i=1;i<=nodecnt;i++) Son[S[i].fa].push_back(i);
+	dfs(1);
+
+	//for (int i=1;i<=nodecnt;i++) cout<<S[i].Id.size()<<" ";cout<<endl;
+	
 	/*
 	for (int i=1;i<=nodecnt;i++)
 	{
@@ -113,11 +125,23 @@ void Insert(int c,int id)
 		if (S[p].len+1==S[q].len) S[np].fa=q;
 		else
 		{
-			int nq=++nodecnt;S[nq]=S[q];
-			S[nq].len=S[p].len+1;
+			int nq=++nodecnt;S[nq]=S[q];S[nq].len=S[p].len+1;
 			S[q].fa=S[np].fa=nq;
 			while ((p!=0)&&(S[p].son[c]==q)) S[p].son[c]=nq,p=S[p].fa;
 		}
+	}
+	return;
+}
+
+
+void dfs(int u)
+{
+	for (int i=0;i<Son[u].size();i++)
+	{
+		int v=Son[u][i];
+		dfs(v);
+		for (set<int>::iterator it=S[v].Id.begin();it!=S[v].Id.end();it++)
+			S[u].Id.insert(*it);
 	}
 	return;
 }
