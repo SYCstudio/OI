@@ -48,14 +48,15 @@ int main()
 
 		int now=root;
 		int L=0,R=0,Ans=0;
+		int nowl=0;
 		for (int i=1;i<=len;i++)
 		{
-			while ((now!=0)&&(S[now].son[str[i]-'0']==0)) now=S[now].fa;
+			while ((now!=0)&&(S[now].son[str[i]-'0']==0)) now=S[now].fa,nowl=S[now].len;
 			if (now==0){
 				for (;i<=len;i++) Mx[i]=0;break;
 			}
-			now=S[now].son[str[i]-'0'];
-			Mx[i]=S[now].len;R=max(R,Mx[i]);
+			now=S[now].son[str[i]-'0'];nowl++;
+			Mx[i]=nowl;R=max(R,Mx[i]);
 		}
 
 		//cout<<"Mx:";for (int i=1;i<=len;i++) cout<<Mx[i]<<" ";cout<<endl;
@@ -109,7 +110,7 @@ bool Check(int limit)
 		while ((L<=R)&&(Q[L]<i-Mx[i])) L++;
 		//cout<<Q[L]<<" -> "<<i<<" "<<i-Mx[i]<<endl;
 		F[i]=F[i-1];
-		if (Q[L]>=i-Mx[i]) F[i]=max(F[i],F[Q[L]]+i-Q[L]);
+		if (L<=R) F[i]=max(F[i],F[Q[L]]+i-Q[L]);
 	}
 	//for (int i=1;i<=len;i++) cout<<F[i]<<" ";cout<<endl;
 	//cout<<(ld)len*(ld)0.90<<" ? "<<F[len]<<" "<<((ld)1.0*(ld)F[len]+eps>=(ld)len*(ld)0.90)<<endl;
