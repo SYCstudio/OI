@@ -8,9 +8,9 @@ using namespace std;
 #define ll long long
 #define mem(Arr,x) memset(Arr,x,sizeof(Arr))
 
-const int maxN=230;
-const int maxM=maxN*51+1010;
-const int inf=2147483647;
+const int maxN=400;
+const int maxM=maxN*61;
+const int inf=47483647;
 
 class Edge
 {
@@ -50,20 +50,21 @@ int main()
 		edgecnt=-1;ecnt=0;mem(Head,-1);mem(Sum,0);
 		cin>>n>>m;
 		S=n+m+1;T=n+m+2;SS=n+m+3;TT=n+m+4;
+		int sum1=0,sum2=0;
 		//建原图
 		for (int i=1;i<=n;i++)
 		{
-			int key;cin>>key;
+			int key;cin>>key;sum1+=key;
 			EE[++ecnt]=((EDGE){S,i,key,key});
 		}
 		for (int i=1;i<=m;i++)
 		{
-			int key;cin>>key;
+			int key;cin>>key;sum2+=key;
 			EE[++ecnt]=((EDGE){i+n,T,key,key});
 		}
 		for (int i=1;i<=n;i++) for (int j=1;j<=m;j++) Min[i][j]=0,Max[i][j]=inf;
 		int C;cin>>C;
-		for (int cc=1;cc<=C;cc++)
+		while (C--)
 		{
 			int x,y,key;char c;cin>>x>>y>>c>>key;
 			if ((x==0)&&(y==0))
@@ -86,7 +87,7 @@ int main()
 				for (int i=1;i<=m;i++)
 					if (c=='=') Min[x][i]=max(Min[x][i],key),Max[x][i]=min(Max[x][i],key);
 					else if (c=='<') Max[x][i]=min(Max[x][i],key-1);
-					else if (c=='>') Min[i][y]=max(Min[i][y],key+1);
+					else if (c=='>') Min[x][i]=max(Min[x][i],key+1);
 			}
 			else
 			{
@@ -112,6 +113,9 @@ int main()
 		}
 		//*/
 		
+		if (sum1!=sum2){
+			printf("IMPOSSIBLE\n");continue;
+		}
 		bool flag=1;
 		for (int i=1;(i<=n)&&(flag);i++)
 			for (int j=1;(j<=m)&&(flag);j++)
