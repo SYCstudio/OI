@@ -62,14 +62,14 @@ int main()
 	int Ans=0,mxflow=0;
 	while (spfa())
 	{
-		Ans=Flow[TT]*Dist[TT];mxflow+=Flow[TT];
+		Ans+=Flow[TT]*Dist[TT];mxflow+=Flow[TT];
 		int now=TT;
 		while (now!=SS){
 			E[Path[now]].flow-=Flow[TT];E[Path[now]^1].flow+=Flow[TT];now=E[Path[now]].u;
 		}
 	}
 
-	cout<<mxflow<<endl;
+	//cout<<mxflow<<endl;
 	printf("%d\n",Ans);
 	return 0;
 }
