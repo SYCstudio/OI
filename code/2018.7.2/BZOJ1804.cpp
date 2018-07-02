@@ -75,7 +75,7 @@ int main()
 		int u=Q.front();Q.pop();//cout<<u<<" ";cout<<endl;
 		for (int i=Head[u];i!=-1;i=Next[i])
 			if (Depth[V[i]]==-1){
-				Depth[V[i]]=Depth[u]^1;Q.push(V[i]);
+				Depth[V[i]]=Depth[u]+1;Q.push(V[i]);
 			}
 	}
 
