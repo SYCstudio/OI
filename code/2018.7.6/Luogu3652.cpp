@@ -9,8 +9,8 @@ using namespace std;
 #define ll long long
 #define mem(Arr,x) memset(Arr,x,sizeof(Arr))
 
-const int maxN=810;
-const int maxM=maxN*maxN*2;
+const int maxN=2010;
+const int maxM=801000;
 const int inf=147483647;
 
 int nb,ni,ns,m;
@@ -50,7 +50,9 @@ namespace FL
 
 int main()
 {
+	//freopen("input.in","r",stdin);//freopen("syc.out","w",stdout);
 	scanf("%d%d%d%d",&nb,&ni,&ns,&m);FD::Init();
+	//cout<<nb+ni+ni+ni+ns<<" "<<m<<endl;
 	for (int i=1;i<=nb+ns;i++) scanf("%d",&Val[i]);
 	for (int i=1;i<=ni;i++) scanf("%d",&L1[i]);
 	for (int i=1;i<=ni;i++) scanf("%d",&L2[i]);
@@ -63,24 +65,19 @@ int main()
 			To[u].push_back(i);
 		}
 		scanf("%d",&End[i]);
-		if (End[i]) FD::Add_Edge(i,ni+1,0);
 	}
 	for (int i=1;i<=m;i++)
 	{
 		int u,v,w;scanf("%d%d%d",&u,&v,&w);
-		FD::Add_Edge(u,v,w);FD::Add_Edge(v,u,w);
+		FD::Add_Edge(u,v,w);
 	}
 
 	FD::Do();
 
-	int L=0,R=10000;
-	for (int i=nb+1;i<=nb+ns;i++)
-	{
-		int mx=inf;
-		for (int j=0;j<To[i].size();j++)
-			mx=min(mx,FD::Mat[To[i][j]][ni+1]);
-		L=max(L,mx);
-	}
+	int L=0,R=0;
+	for (int i=1;i<=ni;i++)
+		for (int j=1;j<=ni;j++)
+			if ((i!=j)&&(FD::Mat[i][j]<inf)) R=max(R,FD::Mat[i][j]);
 
 	/*
 	cout<<"L:"<<L<<endl;
@@ -111,19 +108,24 @@ bool Check(int val)
 {
 	//cout<<"Check:"<<val<<endl;
 	FL::Init();
-	FL::S=nb+ni+ni+1;FL::T=FL::S+1;
+	FL::S=nb+ns+ni+ni+ni+1;FL::T=FL::S+1;
 	int sum=0;
 	for (int i=1;i<=nb;i++)
 	{
 		FL::Add_Edge(FL::S,i,Val[i]);sum+=Val[i];
-		for (int j=0;j<To[i].size();j++) FL::Add_Edge(i,nb+To[i][j],L1[To[i][j]]);
+		for (int j=0;j<To[i].size();j++) FL::Add_Edge(i,nb+ns+To[i][j],inf);
+	}
+	for (int i=nb+1;i<=ns+nb;i++)
+	{
+		FL::Add_Edge(FL::S,i,Val[i]);sum+=Val[i];
+		for (int j=0;j<To[i].size();j++) FL::Add_Edge(i,nb+ns+ni+ni+To[i][j],inf);
 	}
 	for (int i=1;i<=ni;i++)
 	{
-		FL::Add_Edge(nb+i,nb+ni+i,L1[i]);
-		if (End[i]) FL::Add_Edge(nb+ni+i,FL::T,L2[i]);
+		FL::Add_Edge(nb+ns+i,nb+ns+ni+i,L1[i]);
+		if (End[i]) FL::Add_Edge(nb+ns+ni+i,FL::T,L2[i]),FL::Add_Edge(nb+ns+ni+ni+i,FL::T,inf);
 		for (int j=1;j<=ni;j++)
-			if ((i!=j)&&(FD::Mat[i][j]<=val)) FL::Add_Edge(nb+ni+i,nb+j,L2[i]);
+			if ((i!=j)&&(FD::Mat[i][j]<=val)) FL::Add_Edge(nb+ns+ni+i,nb+ns+j,L2[i]),FL::Add_Edge(nb+ns+ni+ni+i,nb+ns+ni+ni+j,inf);
 	}
 
 	/*
@@ -132,33 +134,53 @@ bool Check(int val)
 			if (FL::E[j].flow) cout<<i<<" -> "<<FL::E[j].v<<" "<<FL::E[j].flow<<endl;
 	cout<<endl;
 	//*/
+	//cout<<"Build over"<<endl;
+	//cout<<FL::edgecnt<<endl;
 
-	return FL::Mxflow()>=sum;
+	int mxflow=FL::Mxflow();
+	//cout<<"mxflow:"<<mxflow<<endl;
+
+	return mxflow>=sum;
 }
 
 namespace FD
 {
 	void Init(){
-		for (int i=1;i<=ni+1;i++) for (int j=1;j<=ni+1;j++) Mat[i][j]=inf;
-		for (int i=1;i<=ni+1;i++) Mat[i][i]=0;return;
+		for (int i=1;i<=ni;i++) for (int j=1;j<=ni;j++) Mat[i][j]=inf;
+		//for (int i=1;i<=ni;i++) Mat[i][i]=0;
+		return;
 	}
 
 	void Add_Edge(int u,int v,int w){
-		Mat[u][v]=min(Mat[u][v],w);return;
+		if (Mat[u][v]==inf) Mat[u][v]=Mat[v][u]=w;
+		else Mat[u][v]=Mat[v][u]=Mat[u][v]+w;return;
 	}
 
 	void Do()
 	{
-		for (int k=1;k<=ni+1;k++)
-			for (int i=1;i<=ni+1;i++)
-				for (int j=1;j<=ni+1;j++)
-					Mat[i][j]=min(Mat[i][j],Mat[i][k]+Mat[k][j]);
+		/*
+		for (int i=1;i<=ni;i++)
+		{
+			for (int j=1;j<=ni;j++)
+				if (Mat[i][j]!=inf) cout<<Mat[i][j]<<" ";
+				else cout<<"-1 ";
+			cout<<endl;
+		}
+		cout<<endl;
+		//*/
+		for (int k=1;k<=ni;k++)
+			for (int i=1;i<=ni;i++)
+				if (k!=i)
+					for (int j=1;j<=ni;j++)
+						if ((i!=j)&&(j!=k))
+							Mat[i][j]=min(Mat[i][j],Mat[i][k]+Mat[k][j]);
 
 		/*
-		for (int i=1;i<=ni+1;i++)
+		for (int i=1;i<=ni;i++)
 		{
-			for (int j=1;j<=ni+1;j++)
-				cout<<Mat[i][j]<<" ";
+			for (int j=1;j<=ni;j++)
+				if (Mat[i][j]!=inf) cout<<Mat[i][j]<<" ";
+				else cout<<"-1 ";
 			cout<<endl;
 		}
 		//*/
@@ -204,7 +226,7 @@ namespace FL
 	int dfs(int u,int flow)
 	{
 		if (u==T) return flow;
-		for (int i=Head[u];i!=-1;i=Next[i])
+		for (int &i=cur[u];i!=-1;i=Next[i])
 			if ((E[i].flow>0)&&(Depth[E[i].v]==Depth[u]+1))
 				if (int di=dfs(E[i].v,min(flow,E[i].flow))){
 					E[i].flow-=di;E[i^1].flow+=di;return di;
