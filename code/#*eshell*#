@@ -1,0 +1,78 @@
+Welcome to the Emacs shell
+
+~/oi/code $ g++ BZOJ2212.cpp -o BZOJ2212.exe
+BZOJ2212.cpp: In function ‘void Calc(int)’:
+BZOJ2212.cpp:54:32: error: ‘Size’ was not declared in this scope
+   Modify(root[u],1,n,Key[u],1);Size[u]=1;return;
+                                ^
+~/oi/code $ g++ BZOJ2212.cpp -o BZOJ2212.exe
+~/oi/code $ ./BZOJ2122.exe
+./BZOJ2122.exe: command not found
+~/oi/code $ ./BZOJ2212.exe
+3
+0
+0
+3
+1
+2
+0
+~/oi/code $ g++ BZOJ2212.cpp -o BZOJ2212.exe
+~/oi/code $ ./BZOJ2212.exe
+3
+0
+0
+3
+1
+2
+1 2 3
+0
+~/oi/code $ g++ BZOJ2212.cpp -o BZOJ2212.exe
+~/oi/code $ ./BZOJ2212.exe
+3
+0
+0
+3
+1
+2
+1 2 3
+2 4 5
+4 0 0
+5 0 0
+3 0 0
+1
+~/oi/code $ g++ BZOJ2212.cpp -o BZOJ2212.exe
+~/oi/code $ ./BZOJ2212.exe
+3
+0
+0
+3
+1
+2
+1
+~/oi/code $ g++ BZOJ2212.cpp -o BZOJ2212.exe
+~/oi/code $ ./BZOJ2212.exe
+3
+0
+0
+3
+1
+2
+1
+~/oi/code $ g++ BZOJ4756.cpp -o BZOJ4756.exe
+~/oi/code $ ./BZOJ4756.exe
+5
+804289384
+846930887
+681692778
+714636916
+957747794
+1
+1
+2
+3
+2
+0
+1
+0
+0
+~/oi/code $ 
