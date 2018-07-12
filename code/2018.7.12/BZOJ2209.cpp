@@ -57,31 +57,23 @@ int main()
 
 	while (m--)
 	{
-		scanf("%s",Input);
-		if (Input[0]=='R'){
-			int l,r,k;char ch;scanf("%d%d %c",&l,&r,&ch);
-			if (ch==')') k=1;
-			else k=-1;
-			int pl=Kth(l),pr=Kth(r+2);
-			Splay(pl,0);Splay(pr,pl);PushDown(pl);PushDown(pr);
-			Cover(S[pr].ch[0],k);
-		}
-		if (Input[0]=='S'){
+		int opt;scanf("%d",&opt);
+		if (opt==2){
 			int l,r;scanf("%d%d",&l,&r);
 			int pl=Kth(l),pr=Kth(r+2);
-			Splay(pl,0);Splay(pr,pl);PushDown(pl);PushDown(pr);
+			Splay(pl,0);PushDown(pl);Splay(pr,pl);PushDown(pr);
 			Reverse(S[pr].ch[0]);
 		}
-		if (Input[0]=='I'){
+		if (opt==1){
 			int l,r;scanf("%d%d",&l,&r);
 			int pl=Kth(l),pr=Kth(r+2);
-			Splay(pl,0);Splay(pr,pl);PushDown(pl);PushDown(pr);
+			Splay(pl,0);PushDown(pl);Splay(pr,pl);PushDown(pr);
 			Nega(S[pr].ch[0]);
 		}
-		if (Input[0]=='Q'){
+		if (opt==0){
 			int l,r;scanf("%d%d",&l,&r);
 			int pl=Kth(l),pr=Kth(r+2);
-			Splay(pl,0);Splay(pr,pl);PushDown(pl);PushDown(pr);
+			Splay(pl,0);PushDown(pl);Splay(pr,pl);PushDown(pr);
 			int c=S[pr].ch[0];
 			printf("%d\n",(S[c].premax+1)/2+(abs(S[c].sufmin)+1)/2);
 		}
@@ -103,6 +95,7 @@ void Update(int x)
 
 void Cover(int x,int key)
 {
+	S[x].rev=S[x].nega=0;
 	S[x].key=S[x].cov=key;S[x].sum=S[x].sz*key;
 	if (key==1){
 		S[x].premax=S[x].sufmax=S[x].sz;S[x].premin=S[x].sufmin=0;
@@ -132,6 +125,11 @@ void Nega(int x)
 
 void PushDown(int x)
 {
+	if (S[x].cov!=0){
+		if (ls) Cover(ls,S[x].cov);
+		if (rs) Cover(rs,S[x].cov);
+		S[x].cov=0;
+	}
 	if (S[x].rev){
 		if (ls) Reverse(ls);
 		if (rs) Reverse(rs);
@@ -141,11 +139,6 @@ void PushDown(int x)
 		if (ls) Nega(ls);
 		if (rs) Nega(rs);
 		S[x].nega=0;
-	}
-	if (S[x].cov!=0){
-		if (ls) Cover(ls,S[x].cov);
-		if (rs) Cover(rs,S[x].cov);
-		S[x].cov=0;
 	}
 	return;
 }
