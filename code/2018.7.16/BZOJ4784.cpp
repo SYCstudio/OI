@@ -9,13 +9,13 @@ using namespace std;
 #define mem(Arr,x) memset(Arr,x,sizeof(Arr))
 
 const int maxN=505000;
-const int maxM=1010000*2;
+const int maxM=1010000*3;
 const int Mod=998244353;
 const int inf=2147483647;
 
 int n,m;
 int edgecnt=-1,Head[maxN],Next[maxM],V[maxM];
-int dfncnt,dfn[maxN],low[maxN],top,St[maxN],NodeW[maxN];
+int dfncnt,dfn[maxN],low[maxN],top,St[maxM],NodeW[maxN];
 bool ink[maxN],vis[maxN],Fob[maxM];
 int F[maxN],G[maxN];
 
@@ -31,16 +31,17 @@ int main()
 	
 	while (TTT--)
 	{
-		edgecnt=-1;mem(Head,-1);
+		edgecnt=-1;
 		scanf("%d%d",&n,&m);
+		for (int i=1;i<=n;i++) NodeW[i]=0,ink[i]=vis[i]=0,Head[i]=-1;
 		for (int i=1;i<=m;i++)
 		{
 			int u,v;scanf("%d%d",&u,&v);
 			Add_Edge(u,v);
 		}
 
-		top=0;mem(ink,0);mem(vis,0);mem(NodeW,0);
 		dfs_check(1,1);
+		//cout<<"check finish"<<endl;
 
 		bool flag=1;
 		for (int i=1;i<=n;i++)
@@ -51,10 +52,11 @@ int main()
 			printf("0\n");continue;
 		}
 
-		dfncnt=0;mem(vis,0);mem(ink,0);mem(dfn,0);
+		dfncnt=0;top=0;for (int i=1;i<=n;i++) ink[i]=dfn[i]=0;
 		tarjan(1,0);
+		//cout<<"tarjan fihish"<<endl;
 
-		mem(vis,0);
+		for (int i=1;i<=n;i++) vis[i]=0;
 		int Ans=1;
 		for (int i=1;i<=n;i++)
 			if (vis[i]==0){
@@ -67,8 +69,8 @@ int main()
 }
 
 void Add_Edge(int u,int v){
-	Next[++edgecnt]=Head[u];Head[u]=edgecnt;V[edgecnt]=v;
-	Next[++edgecnt]=Head[v];Head[v]=edgecnt;V[edgecnt]=u;
+	Next[++edgecnt]=Head[u];Head[u]=edgecnt;V[edgecnt]=v;Fob[edgecnt]=0;
+	Next[++edgecnt]=Head[v];Head[v]=edgecnt;V[edgecnt]=u;Fob[edgecnt]=0;
 	return;
 }
 
@@ -87,6 +89,7 @@ void dfs_check(int u,int fa){
 
 void tarjan(int u,int fa)
 {
+	//cout<<"tarjan:"<<u<<endl;
 	dfn[u]=low[u]=++dfncnt;ink[u]=1;
 	for (int i=Head[u];i!=-1;i=Next[i])
 		if (V[i]!=fa)
@@ -96,7 +99,7 @@ void tarjan(int u,int fa)
 				St[++top]=i;
 				tarjan(v,u);
 				low[u]=min(low[u],low[v]);
-				if (low[v]>=dfn[u])
+				if (low[v]==dfn[u])
 				{
 					int w;
 					do
@@ -109,13 +112,15 @@ void tarjan(int u,int fa)
 			}
 			else if (ink[V[i]]) low[u]=min(low[u],dfn[V[i]]),St[++top]=i;
 		}
+	ink[u]=0;
 	if ((low[u]==dfn[u])&&(top)) top--;
+	//cout<<"t "<<u<<endl;
 	return;
 }
 
 void dfs_dp(int u,int fa)
 {
-	F[u]=1;int son=0;
+	F[u]=1;int son=0;vis[u]=1;
 	for (int i=Head[u];i!=-1;i=Next[i])
 		if ((V[i]!=fa)&&(Fob[i]==0))
 		{
@@ -125,3 +130,4 @@ void dfs_dp(int u,int fa)
 	if (u!=fa) F[u]=1ll*F[u]*G[son+1]%Mod;
 	else F[u]=1ll*F[u]*G[son]%Mod;
 }
+
