@@ -5,6 +5,7 @@
 #include<algorithm>
 #include<cmath>
 #include<set>
+#include<queue>
 using namespace std;
 
 #define ll long long
@@ -12,9 +13,9 @@ using namespace std;
 #define Find(x) (lower_bound(&Num[1],&Num[numcnt+1],x)-Num)
 #define IL inline
 
-const int maxN=50010;
+const int maxN=50010*3;
 const int maxM=maxN<<1;
-const int maxBit=16;
+const int maxBit=18;
 const int inf=2147483647;
 
 class Question
@@ -33,7 +34,7 @@ int n,m;
 int edgecnt=0,Head[maxN],Next[maxM],V[maxM];
 int numcnt,Num[maxN*2],Val[maxN],VVal[maxN];
 int blocksize,blockcnt,Belong[maxN],top,St[maxN],Depth[maxN],Fa[maxN];
-int dfncnt,Seq[maxBit][maxN*5],fst[maxN],lst[maxN],Log[maxN*5];
+int dfncnt,Seq[maxBit][maxN*8],fst[maxN],lst[maxN],Log[maxN*8];
 Question Qn[maxN];
 Modify My[maxN];
 set<int> AnsSet;
@@ -48,12 +49,15 @@ IL void TimAdd(int t);
 IL void TimBack(int t);
 IL void Move(int u,int v);
 IL void Reverse(int u);
+IL void Insert(int key);
+IL void Delete(int key);
 
 int main()
 {
-	for (int i=1;i<maxN*5;i++) Log[i]=log2(i);
+	//freopen("2.in","r",stdin);freopen("123.out","w",stdout);
+	for (int i=1;i<maxN*3;i++) Log[i]=log2(i);
 	mem(Head,-1);
-	scanf("%d%d",&n,&m);numcnt=n;blocksize=pow(n,0.66666);
+	scanf("%d%d",&n,&m);numcnt=n;blocksize=pow(n,0.5);
 	for (int i=1;i<=n;i++) scanf("%d",&Val[i]),Num[i]=Val[i],VVal[i]=Val[i];
 	for (int i=1;i<n;i++)
 	{
@@ -79,7 +83,7 @@ int main()
 	}
 
 	for (int i=1;i<=n;i++) Val[i]=VVal[i];
-
+	
 	sort(&Num[1],&Num[numcnt+1]);numcnt=unique(&Num[1],&Num[numcnt+1])-Num-1;
 
 	for (int i=1;i<=n;i++) Val[i]=Find(Val[i]);
@@ -87,16 +91,18 @@ int main()
 
 	Depth[1]=0;
 	dfs(1,0);
+	while (top) Belong[St[top--]]=blockcnt;
 	for (int i=1;i<=qcnt;i++) if (Belong[Qn[i].u]>Belong[Qn[i].v]) swap(Qn[i].u,Qn[i].v);
 	for (int i=1;i<maxBit;i++)
 		for (int j=1;j<=dfncnt;j++)
 			if (Depth[Seq[i-1][j]]<=Depth[Seq[i-1][j+(1<<(i-1))]]) Seq[i][j]=Seq[i-1][j];
 			else Seq[i][j]=Seq[i-1][j+(1<<(i-1))];
-	AnsSet.insert(0);
+	Insert(0);
 	for (int i=1;i<=numcnt;i++){
-		AnsSet.insert(Num[i]);
-		if (Num[i]!=0) AnsSet.insert(Num[i]-1);
-		AnsSet.insert(Num[i]+1);
+		if (Num[i]>n) break;
+		Insert(Num[i]);
+		if (Num[i]!=0) Insert(Num[i]-1);
+		Insert(Num[i]+1);
 	}
 
 	sort(&Qn[1],&Qn[qcnt+1],cmp);
@@ -159,8 +165,8 @@ IL void TimAdd(int t)
 {
 	if (vis[My[t].pos])
 	{
-		Cnt[My[t].p]--;if (Cnt[My[t].p]==0) AnsSet.insert(Num[My[t].p]);
-		Cnt[My[t].q]++;if (Cnt[My[t].q]==1) AnsSet.erase(Num[My[t].q]);
+		Cnt[My[t].p]--;if (Cnt[My[t].p]==0) Insert(Num[My[t].p]);
+		Cnt[My[t].q]++;if (Cnt[My[t].q]==1) Delete(Num[My[t].q]);
 	}
 	Val[My[t].pos]=My[t].q;
 	return;
@@ -170,8 +176,8 @@ IL void TimBack(int t)
 {
 	if (vis[My[t].pos])
 	{
-		Cnt[My[t].q]--;if (Cnt[My[t].q]==0) AnsSet.insert(Num[My[t].q]);
-		Cnt[My[t].p]++;if (Cnt[My[t].p]==1) AnsSet.erase(Num[My[t].p]);
+		Cnt[My[t].q]--;if (Cnt[My[t].q]==0) Insert(Num[My[t].q]);
+		Cnt[My[t].p]++;if (Cnt[My[t].p]==1) Delete(Num[My[t].p]);
 	}
 	Val[My[t].pos]=My[t].p;
 	return;
@@ -189,13 +195,25 @@ IL void Reverse(int u)
 {
 	if (vis[u]==0){
 		Cnt[Val[u]]++;
-		if (Cnt[Val[u]]==1) AnsSet.erase(Num[Val[u]]);
+		if (Cnt[Val[u]]==1) Delete(Num[Val[u]]);
 	}
 	else{
 		Cnt[Val[u]]--;
-		if (Cnt[Val[u]]==0) AnsSet.insert(Num[Val[u]]);
+		if (Cnt[Val[u]]==0) Insert(Num[Val[u]]);
 	}
 	vis[u]^=1;return;
+}
+
+IL void Insert(int key)
+{
+	if (key>n) return;
+	AnsSet.insert(key);return;
+}
+
+IL void Delete(int key)
+{
+	if (key>n) return;
+	AnsSet.erase(key);return;
 }
 /*
 10 10
@@ -220,4 +238,3 @@ IL void Reverse(int u)
 0 10 0
 0 7 7
 //*/
-
