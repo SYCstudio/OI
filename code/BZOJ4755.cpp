@@ -34,8 +34,8 @@ int main()
 	int Ans=0;
 	Ans=max(Ans,Manacher(A,P1));
 	Ans=max(Ans,Manacher(B,P2));
-	for (int i=1;i<=n;i++) H1[i]=H1[i-1]*base+A[i]-'A';
-	for (int i=n;i>=1;i--) H2[i]=H2[i+1]*base+B[i]-'A';
+	for (int i=1;i<=n+n+1;i++) H1[i]=H1[i-1]*base+A[i]-'A';
+	for (int i=n+n+1;i>=1;i--) H2[i]=H2[i+1]*base+B[i]-'A';
 
 	//cout<<Ans<<endl;
 	
@@ -43,28 +43,31 @@ int main()
 	{
 		int p1=i-P1[i]+1,p2=i+P1[i]-1;
 		cout<<i<<" ["<<p1<<","<<p2<<"]"<<endl;
-		int L=1,R=min(p1-1,n+n-p2+1),p=-1;
+		int L=1,R=min(p1-1,n+n+1-p2+1),p=-1;
 		cout<<"("<<L<<","<<R<<")"<<endl;
 		do
 		{
 			int mid=(L+R)>>1;
+			cout<<"check:["<<p1-mid<<","<<p1-1<<"] ["<<p2<<","<<p2+mid-1<<"] "<<Get1(p1-mid,p1-1)<<" "<<Get2(p2,p2+mid-1)<<endl;
+			//for (int j=p1-mid;j<=p1-1;j++) cout<<A[j];cout<<" ";
+			//for (int j=p2;j<=p2+mid-1;j++) cout<<B[j];cout<<endl;
 			if (Get1(p1-mid,p1-1)==Get2(p2,p2+mid-1)) p=mid,L=mid+1;
 			else R=mid-1;
 		}
 		while (L<=R);
-		if (p!=-1) Ans=max(Ans,P1[i]-1+p),cout<<"c1:"<<p*2<<" ";
+		if (p!=-1) Ans=max(Ans,P1[i]-1+p),cout<<"c1:"<<p<<" "<<P1[i]-1+p<<endl;
 
-		L=1;R=min(p1-1,n+n-p2);p=-1;
+		L=1;R=min(p1-1,n+n+1-p2);p=-1;
 		cout<<"("<<L<<","<<R<<")"<<endl;
 		do
 		{
 			int mid=(L+R)>>1;
+			cout<<"check:["<<p1-mid<<","<<p1-1<<"] ["<<p2+1<<","<<p2+mid<<"] "<<Get1(p1-mid,p1-1)<<" "<<Get2(p2+1,p2+mid)<<endl;
 			if (Get1(p1-mid,p1-1)==Get2(p2+1,p2+mid)) p=mid,L=mid+1;
 			else R=mid-1;
 		}
 		while (L<=R);
-		if (p!=-1) Ans=max(Ans,P1[i]-1+p+1),cout<<"c2:"<<p*2+1<<" ";
-		cout<<endl;
+		if (p!=-1) Ans=max(Ans,P1[i]-1+p+1),cout<<"c2:"<<p<<" "<<P1[i]-1+p+1<<endl;
 	}
 
 	printf("%d\n",Ans);
