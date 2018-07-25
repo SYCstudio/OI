@@ -22,9 +22,9 @@ bool Check(int rk);
 
 int main()
 {
-	while (scanf("%d",&K)!=EOF)
+	//while (scanf("%d",&K)!=EOF)
+	scanf("%d",&K);
 	{
-		if (K==0) break;
 		scanf("%s",str+1);
 		n=strlen(str+1);
 
@@ -90,8 +90,8 @@ void GetSA()
 
 	//for (int i=1;i<=n;i++) cout<<SA[i]<<" ";cout<<endl;
 	//for (int i=1;i<=n;i++) cout<<Rank[i]<<" ";cout<<endl;
-	for (int i=1;i<=n;i++) cout<<Height[i]<<" ";cout<<endl;
-	for (int i=1;i<=n;i++) cout<<Sum[i]<<" ";cout<<endl;
+	//for (int i=1;i<=n;i++) cout<<Height[i]<<" ";cout<<endl;
+	//for (int i=1;i<=n;i++) cout<<Sum[i]<<" ";cout<<endl;
 
 	return;
 }
