@@ -32,7 +32,7 @@ public:
 	void GetSA(){
 		for (int i=1;i<=len;i++) CntA[str[i]-'a']++;
 		for (int i=1;i<=26;i++) CntA[i]+=CntA[i-1];
-		for (int i=len;i>=1;i--) SA[Cnt[str[i]-'a']--]=i;
+		for (int i=len;i>=1;i--) SA[CntA[str[i]-'a']--]=i;
 		Rank[SA[1]]=1;
 		for (int i=2;i<=len;i++)
 		{
@@ -40,7 +40,7 @@ public:
 			if (str[SA[i]]!=str[SA[i-1]]) Rank[SA[i]]++;
 		}
 
-		for (int i=2;Rank[SA[len]]!=len;i<<=1)
+		for (int i=1;Rank[SA[len]]!=len;i<<=1)
 		{
 			mem(CntA,0);mem(CntB,0);
 			for (int j=1;j<=len;j++)
@@ -72,6 +72,8 @@ public:
 			for (int j=1;j+(1<<(i-1))<=len;j++)
 				Height[i][j]=min(Height[i-1][j],Height[i-1][j+(1<<(i-1))]);
 
+		for (int i=1;i<=len;i++) cout<<SA[i]<<" ";cout<<endl;
+
 		return;
 	}
 
@@ -83,7 +85,6 @@ public:
 	}
 };
 
-int n;
 SA A,B;
 int F[maxN],G[maxN];
 
@@ -93,7 +94,7 @@ int main()
 	int TTT;scanf("%d",&TTT);
 	while (TTT--)
 	{
-		A.init();B.init();mem(F,0);mem(G,0);
+		A.Init();B.Init();mem(F,0);mem(G,0);
 		scanf("%s",A.str+1);
 		int len=strlen(A.str+1);
 		A.len=B.len=len;
@@ -103,13 +104,21 @@ int main()
 
 		for (int i=1;i+i<=len;i++)
 			for (int j=i+i;j<=len;j++)
-				if (A.str[i]==A.str[j])
+				if (A.str[j-i]==A.str[j])
 				{
-					int l=max(j-i+1,j-B.LCP(len-i+1,len-j+1)),r=min(j+i-1,j+A.LCP(i,j));
-					if (l<=r)
+					int l=max(j-i+1,j-B.LCP(len-(j-i)+1,len-j+1)+1),r=min(j+i-1,j+A.LCP(j-i,j)-1);
+					cout<<"("<<j-i<<","<<j<<")"<<B.LCP(len-(j-i)+1,len-j+1)<<" "<<A.LCP(j-i,j)<<" ["<<l<<","<<r<<"]"<<endl;
+					int k=r-l+1-i;
+					cout<<"k:"<<k<<endl;
+					if (k>=0)
 					{
-						F[
+						F[l-k+1]++;F[r+1]--;
+						G[l-i]++;G[r-i+k]--;
 					}
 				}
+		for (int i=1;i<=len;i++) F[i]+=F[i-1],G[i]+=G[i-1];
+
+		for (int i=1;i<=len;i++) cout<<F[i]<<" ";cout<<endl;
+		for (int i=1;i<=len;i++) cout<<G[i]<<" ";cout<<endl;
 	}
 }
