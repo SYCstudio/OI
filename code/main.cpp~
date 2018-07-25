@@ -1,0 +1,9 @@
+#include<iostream>
+#include<cstdio>
+#include<cstldib>
+using namespace std;
+
+int main()
+{
+	int cas=0;
+}

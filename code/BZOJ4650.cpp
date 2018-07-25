@@ -72,7 +72,7 @@ public:
 			for (int j=1;j+(1<<(i-1))<=len;j++)
 				Height[i][j]=min(Height[i-1][j],Height[i-1][j+(1<<(i-1))]);
 
-		for (int i=1;i<=len;i++) cout<<SA[i]<<" ";cout<<endl;
+		//for (int i=1;i<=len;i++) cout<<SA[i]<<" ";cout<<endl;
 
 		return;
 	}
@@ -103,22 +103,26 @@ int main()
 		A.GetSA();B.GetSA();
 
 		for (int i=1;i+i<=len;i++)
-			for (int j=i+i;j<=len;j++)
+			for (int j=i+i;j<=len;j+=i)
 				if (A.str[j-i]==A.str[j])
 				{
-					int l=max(j-i+1,j-B.LCP(len-(j-i)+1,len-j+1)+1),r=min(j+i-1,j+A.LCP(j-i,j)-1);
-					cout<<"("<<j-i<<","<<j<<")"<<B.LCP(len-(j-i)+1,len-j+1)<<" "<<A.LCP(j-i,j)<<" ["<<l<<","<<r<<"]"<<endl;
-					int k=r-l+1-i;
-					cout<<"k:"<<k<<endl;
-					if (k>=0)
+					int lcp=min(A.LCP(j-i,j),i),lcs=min(B.LCP(len-(j-i)+2,len-j+2),i-1);
+					int k=lcp+lcs+1-i;
+					if (lcp+lcs>=i)
 					{
-						F[l-k+1]++;F[r+1]--;
-						G[l-i]++;G[r-i+k]--;
+						F[j+lcp-k]++;F[j+lcp]--;
+						G[j-i-lcs]++;G[j-i-lcs+k]--;
 					}
 				}
 		for (int i=1;i<=len;i++) F[i]+=F[i-1],G[i]+=G[i-1];
 
-		for (int i=1;i<=len;i++) cout<<F[i]<<" ";cout<<endl;
-		for (int i=1;i<=len;i++) cout<<G[i]<<" ";cout<<endl;
+		//for (int i=1;i<=len;i++) cout<<F[i]<<" ";cout<<endl;
+		//for (int i=1;i<=len;i++) cout<<G[i]<<" ";cout<<endl;
+
+		ll Ans=0;
+		for (int i=1;i<len;i++) Ans=Ans+1ll*F[i]*G[i+1];
+
+		printf("%lld\n",Ans);
 	}
+	return 0;
 }
