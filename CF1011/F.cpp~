@@ -1,0 +1,12 @@
+#include<iostream>
+#include<cstdio>
+#include<cstdlib>
+#include<cstring>
+#include<algorrithm>
+using namespace std;
+
+#define ll long long
+#define mem(Arr,x) memset(Arr,x,sizeof(Arr))
+
+const int maxN=1010000;
+const int inf=2147483647;
