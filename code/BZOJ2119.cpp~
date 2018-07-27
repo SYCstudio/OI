@@ -2,11 +2,15 @@
 #include<cstdio>
 #include<cstdlib>
 #include<cstring>
-#include<algorrithm>
+#include<algorithm>
 using namespace std;
 
 #define ll long long
 #define mem(Arr,x) memset(Arr,x,sizeof(Arr))
 
-const int maxN=1010000;
+const int maxN=50100;
 const int inf=2147483647;
+
+int main()
+{
+}

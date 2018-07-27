@@ -10,7 +10,7 @@ using namespace std;
 #define mem(Arr,x) memset(Arr,x,sizeof(Arr))
 
 const int maxN=1010;
-const ld eps=1e-8;
+const ld eps=1e-6;
 const int inf=2147483647;
 
 int n,m;
@@ -24,15 +24,15 @@ int main()
 	for (int i=1;i<=n;i++) scanf("%d",&A[i]);
 	for (int i=1;i<=n;i++) scanf("%d",&B[i]);
 
-	ld L=0,R=1e9,Ans=-1;
+	ld L=0,R=2e9,Ans=-1;
 	do{
-		ld mid=(L+R)/2.0;
+		ld mid=(L+R)/(ld)2.0;
 		if (Check(mid)) Ans=mid,R=mid-eps;
 		else L=mid+eps;
 	}
 	while (L+eps<R);
 
-	if (Ans==-1) printf("-1\n");
+	if ((Ans==-1)||(Ans>1e9+1)) printf("-1\n");
 	else printf("%.10LF\n",Ans);
 	return 0;
 }
