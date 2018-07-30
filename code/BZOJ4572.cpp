@@ -63,7 +63,20 @@ int main(){
 				if (S2[now+1]==k) now++;
 				tb[k][i]=now;
 			}
-		mem(F,0);mem(G,0);
+
+		/*
+		for (int i=0;i<C;i++){
+			for (int j=0;j<maxAlpha;j++)
+				cout<<ta[j][i]<<" ";
+			cout<<endl;
+		}
+		for (int i=0;i<C;i++){
+			for (int j=0;j<maxAlpha;j++)
+				cout<<tb[j][i]<<" ";
+			cout<<endl;
+		}
+		//*/
+		//mem(F,0);mem(G,0);
 
 		F[0][0][0]=1;
 		for (int i=1;i<=n;i++){
@@ -80,14 +93,14 @@ int main(){
 						for (int y=0;y<C;y++)
 							if (F[S][x][y])
 								for (int k=0;k<maxAlpha;k++){
-									int ns=S,nx=ta[k][x],ny=ta[k][y];
-									if ((j>=C)&&(ns&(1<<(j-C)))) ns^=(1<<(j-C));
-									if (nx==C) ns^=(1<<(j-C)),nx=na;
+									int nS=S,nx=ta[k][x],ny=tb[k][y];
+									if ((j>=C)&&(nS&(1<<(j-C)))) nS^=(1<<(j-C));
+									if (nx==C) nS|=(1<<(j-C)),nx=na;
 									if (ny==C){
 										if (S&(1<<(j-C))) continue;
 										ny=nb;
 									}
-									Add(G[ns][nx][ny],F[S][x][y]);
+									Add(G[nS][nx][ny],F[S][x][y]);
 								}
 				copy();
 			}
