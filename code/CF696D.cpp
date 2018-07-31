@@ -8,8 +8,4 @@ using namespace std;
 #define ll long long
 #define mem(Arr,x) memset(Arr,x,sizeof(Arr))
 
-const int maxN=110;
-const int maxM=13;
-const int inf=2147483647;
-
-int n,m,Q;
+const int x
