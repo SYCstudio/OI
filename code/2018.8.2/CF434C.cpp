@@ -9,8 +9,8 @@ using namespace std;
 #define ll long long
 #define mem(Arr,x) memset(Arr,x,sizeof(Arr))
 
-const int maxN=210;
-const int maxAlpha=20;
+const int maxN=220;
+const int maxAlpha=21;
 const int maxK=510;
 const int Mod=1e9+7;
 const int inf=2147483647;
@@ -25,7 +25,7 @@ queue<int> Q;
 void Insert(int len);
 void GetFail();
 void Add(int &x,int y);
-int Calc(int len,int *Up);
+int Calc(int len,int Up[]);
 
 int main(){
 	scanf("%d%d%d",&n,&m,&K);
@@ -101,7 +101,7 @@ int Calc(int len,int Up[]){
 		if (Val[son[i][0]]<=K) Add(F[(i==Up[1])][1][son[i][0]][Val[son[i][0]]],1);
 	for (int i=2;i<=len;i++)
 		for (int j=1;j<m;j++)
-			if (Val[son[j][0]]<=K) Add(F[0][i][son[j][0]][Val[son[j][1]]],1);
+			if (Val[son[j][0]]<=K) Add(F[0][i][son[j][0]][Val[son[j][0]]],1);
 	for (int i=1;i<len;i++)
 		for (int j=0;j<=nodecnt;j++)
 			for (int k=0;k<=K;k++)
