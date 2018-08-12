@@ -9,6 +9,7 @@ using namespace std;
 
 #define ll long long
 #define mem(Arr,x) memset(Arr,x,sizeof(Arr))
+#define RG register
 
 const int maxN=30100;
 const int maxSqrt=131;
@@ -24,25 +25,25 @@ public:
 
 int n,m;
 int Id[maxN][maxSqrt];
-int edgecnt=-1,Head[maxNode],Next[maxM],V[maxM],W[maxM];
+int edgecnt=1,Head[maxNode],Next[maxM],V[maxM],W[maxM];
 int Dist[maxNode];
 priority_queue<HData> H;
 queue<int> Q;
 bool vis[maxNode];
 
 int Input();
-void Add_Edge(int u,int v,int w);
+void Add_Edge(RG int u,RG int v,RG int w);
 bool operator < (HData A,HData B);
 
 int main(){
-	mem(Head,-1);
+	//mem(Head,-1);
 	n=Input();m=Input();
 	//scanf("%d%d",&n,&m);
-	int size=min(130,(int)sqrt(n));
-	int idcnt=0;
-	for (int i=1;i<=n;i++) for (int j=0;j<=size;j++) Id[i][j]=++idcnt;
-	for (int i=1;i<=n;i++)
-		for (int j=1;j<=size;j++){
+	RG int size=min(13,(int)sqrt(n));
+	RG int idcnt=0;
+	for (RG int i=1;i<=n;i++) for (RG int j=0;j<=size;j++) Id[i][j]=++idcnt;
+	for (RG int i=1;i<=n;i++)
+		for (RG int j=1;j<=size;j++){
 			if (i+j<=n) Add_Edge(Id[i][j],Id[i+j][j],1),Add_Edge(Id[i+j][j],Id[i][j],1);
 			Add_Edge(Id[i][j],Id[i][0],0);
 		}
@@ -53,26 +54,28 @@ int main(){
 			cout<<i<<" -> "<<V[j]<<" "<<W[j]<<endl;
 	//*/
 
-	int b0,b1;
-	for (int i=0;i<m;i++){
-		int b=Input(),p=Input();//scanf("%d%d",&b,&p);
+	RG int b0,b1;
+	for (RG int i=0;i<m;i++){
+		RG int b=Input(),p=Input();//scanf("%d%d",&b,&p);
 		b++;
 		if (i==0) b0=b;
-		if (i==1) b1=b;
+		if (i==1){
+			b1=b;continue;
+		}
 		if (p<=size){
 			Add_Edge(Id[b][0],Id[b][p],0);
 		}
 		else{
-			for (int j=b-p,k=1;j>=1;j-=p,k++) Add_Edge(Id[b][0],Id[j][0],k);
-			for (int j=b+p,k=1;j<=n;j+=p,k++) Add_Edge(Id[b][0],Id[j][0],k);
+			for (RG int j=b-p,k=1;j>=1;j-=p,k++) Add_Edge(Id[b][0],Id[j][0],k);
+			for (RG int j=b+p,k=1;j<=n;j+=p,k++) Add_Edge(Id[b][0],Id[j][0],k);
 		}
 	}
 
-	for (int i=1;i<=idcnt;i++) Dist[i]=inf;
+	for (RG int i=1;i<=idcnt;i++) Dist[i]=inf;
 	Dist[Id[b0][0]]=0;Q.push(Id[b0][0]);vis[Id[b0][0]]=1;
 	do{
-		int u=Q.front();Q.pop();
-		for (int i=Head[u];i!=-1;i=Next[i])
+		RG int u=Q.front();Q.pop();
+		for (RG int i=Head[u];i;i=Next[i])
 			if (Dist[V[i]]>Dist[u]+W[i]){
 				Dist[V[i]]=Dist[u]+W[i];
 				if (vis[V[i]]==0){
@@ -110,13 +113,13 @@ int main(){
 }
 
 int Input(){
-	int x=0;char ch=getchar();
+	RG int x=0;RG char ch=getchar();
 	while ((ch<'0')||(ch>'9')) ch=getchar();
 	while ((ch>='0')&&(ch<='9')) x=x*10+ch-48,ch=getchar();
 	return x;
 }
 
-void Add_Edge(int u,int v,int w){
+void Add_Edge(RG int u,RG int v,RG int w){
 	Next[++edgecnt]=Head[u];Head[u]=edgecnt;V[edgecnt]=v;W[edgecnt]=w;
 	return;
 }
