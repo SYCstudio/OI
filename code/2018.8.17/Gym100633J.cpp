@@ -38,7 +38,7 @@ ll GetFac(ll n,ll p,ll P){
 	ll ret=1;
 	for (ll i=1;i<=P;i++) if (i%p) ret=ret*i%P;
 	ret=QPow(ret,n/P,P);
-	for (ll i=n/P*P+1;i<=n;i++) if (i%p) ret=ret*i%P;
+	for (ll i=1;i<=n%P;i++) if (i%p) ret=ret*i%P;
 	return ret*GetFac(n/p,p,P)%P;
 }
 
@@ -52,10 +52,10 @@ ll Exgcd(ll a,ll b,ll &x,ll &y){
 }
 
 ll GetInv(ll x,ll P){
+	//cout<<"GetInv:"<<x<<" "<<P<<endl;
 	ll a,b;
 	Exgcd(x,P,a,b);
 	a=(a%P+P)%P;
-	if (a==0) a=P;
 	return a;
 }
 
@@ -76,8 +76,10 @@ ll ExLucas(ll n,ll m,ll P){
 			ll pi=i,pk=i;
 			x/=i;
 			while (x%i==0) x/=i,pk*=i;
+			//cout<<pi<<" "<<pk<<endl;
 			ll rt=GetC(n,m,pi,pk);
-			Ret=(Ret+pk*(P/pk)%P*GetInv(P/pk,pk)%P)%P;
+			//cout<<"C("<<n<<","<<m<<") "<<rt<<endl;
+			Ret=(Ret+rt*(P/pk)%P*GetInv(P/pk,pk)%P)%P;
 		}
 	return Ret;
 }
