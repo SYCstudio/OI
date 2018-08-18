@@ -49,7 +49,7 @@ int main(){
 		}
 	}
 	//cout<<j1<<" "<<j2<<endl;
-	if (j1<=j2) printf("YES\n");
+	if (j1<j2) printf("YES\n");
 	else printf("NO\n");
 	return 0;
 }
