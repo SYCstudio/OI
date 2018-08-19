@@ -6,15 +6,11 @@
 #include<vector>
 using namespace std;
 
-#define ll long long
-#define ull unsigned long long
 #define mem(Arr,x) memset(Arr,x,sizeof(Arr))
 #define IL inline
 #define RG register
 
 const int maxN=70;
-const ull base=13;
-const int Mod=20000007;
 const int maxNum=300;
 const int inf=2147483647;
 
@@ -22,17 +18,25 @@ int n,P;
 class Matrix{
 public:
 	int M[maxN][maxN];
-	IL ull GetHash(){
-		RG ull ret=0;RG int i,j;
-		for (i=0;i<n;++i) for (j=0;j<n;++j) ret=ret*base+(ull)M[i][j];
-		return ret;
+	Matrix & operator = (const Matrix A){
+		for (int i=0;i<n;i++) for (int j=0;j<n;j++) M[i][j]=A.M[i][j];
+		return *this;
+	}
+	
+	void Outp(){
+		for (int i=0;i<n;i++){
+			for (int j=0;j<n;j++) cout<<M[i][j]<<" ";
+			cout<<endl;
+		}
+		cout<<endl;
+		return;
 	}
 };
 
 Matrix A,B,C,T,now,Hash[maxNum];
 
-IL Matrix Mul1(const Matrix A,const Matrix B);
-IL Matrix QPow(RG Matrix A,RG int cnt);
+Matrix Mul1(const Matrix A,const Matrix B);
+Matrix QPow(RG Matrix A,RG int cnt);
 Matrix Mul2(const Matrix A,const Matrix B);
 bool Equ(const Matrix A,const Matrix B);
 
@@ -44,24 +48,28 @@ int main(){
 	for (i=0;i<n;++i) for (j=0;j<n;++j) scanf("%d",&B.M[i][j]);
 
 	for (i=0;i<n;++i) C.M[0][i]=rand()%P;
+	//cout<<"C:";for (int i=0;i<n;i++) cout<<C.M[0][i]<<" ";cout<<endl;
 
 	RG int m=ceil(sqrt(P));
-	now=B;Hash[0]=Mul2(now,C);
+	now=B;Hash[0]=Mul2(C,now);
 	
 	for (i=1;i<=m;++i){
-		now=Mul1(now,A);Hash[i]=Mul2(now,C);
+		now=Mul1(now,A);Hash[i]=Mul2(C,now);
+		//now.Outp();
 	}
 
+	/*
 	for (int i=0;i<=m;i++){
 		for (int j=0;j<n;j++) cout<<Hash[i].M[0][j]<<" ";
 		cout<<endl;
 	}
+	//*/
 	
 	T=QPow(A,m);
 	
 	for (i=1;i<=m;++i){
-		C=Mul2(T,C);
-		for (j=m;j>=0;j--) if (Equ(C,Hash[j])){
+		C=Mul2(C,T);
+		for (j=m-1;j>=0;j--) if (Equ(C,Hash[j])){
 			printf("%d\n",((i*m-j)%P+P)%P);break;
 		}
 		//*/
@@ -70,33 +78,35 @@ int main(){
 	return 0;
 }
 
-IL Matrix Mul1(const Matrix A,const Matrix B){
+Matrix Mul1(const Matrix A,const Matrix B){
 	RG Matrix Ret;
 	RG int i,j,k;
-	for (i=0;i<n;++i) for (j=0;j<=n;++j) Ret.M[i][j]=0;
 	for (i=0;i<n;++i)
-		for (j=0;j<n;++j)
+		for (j=0;j<n;++j){
+			Ret.M[i][j]=0;
 			for (k=0;k<n;++k)
-				Ret.M[i][j]=(Ret.M[i][j]+1ll*A.M[i][k]*B.M[k][j]%P)%P;
+				Ret.M[i][j]=(Ret.M[i][j]+A.M[i][k]*B.M[k][j])%P;
+		}
 	return Ret;
 }
 
 Matrix Mul2(const Matrix A,Matrix B){
 	RG Matrix Ret;RG int i,j,k;
 	for (i=0;i<n;++i) Ret.M[0][i]=0;
-	for (k=0;k<n;++k)
-		for (i=0;i<1;++i)
-			for (j=0;j<n;++j)
-				Ret.M[i][j]=(Ret.M[i][j]+1ll*A.M[i][k]*B.M[k][j]%P)%P;
+	for (j=0;j<n;++j){
+		Ret.M[0][j]=0;
+		for (k=0;k<n;++k)
+			Ret.M[0][j]=(Ret.M[0][j]+A.M[0][k]*B.M[k][j])%P;
+	}
 	return Ret;
 }
 
-IL Matrix QPow(RG Matrix A,RG int cnt){
+Matrix QPow(RG Matrix W,RG int cnt){
 	RG Matrix Ret;RG int i;
 	for (i=0;i<n;++i) Ret.M[i][i]=1;
 	while (cnt){
-		if (cnt&1) Ret=Mul1(Ret,A);
-		A=Mul1(A,A);cnt>>=1;
+		if (cnt&1) Ret=Mul1(Ret,W);
+		W=Mul1(W,W);cnt>>=1;
 	}
 	return Ret;
 }
@@ -113,4 +123,6 @@ bool Equ(Matrix A,Matrix B){
 5 3
 3 2
 //*/
+
+
 
