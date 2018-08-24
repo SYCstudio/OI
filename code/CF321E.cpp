@@ -7,6 +7,8 @@ using namespace std;
 
 #define ll long long
 #define mem(Arr,x) memset(Arr,x,sizeof(Arr))
+#define RG register
+#define IL inline
 
 namespace IO{
     const int maxn((1 << 21) + 1);
@@ -51,98 +53,80 @@ namespace IO{
     }
 }
 
-//using namespace IO;
+using namespace IO;
 
+/*
 void Input(int &x){
 	scanf("%d",&x);return;
 }
+//*/
 
 const int maxN=4010;
 const int inf=2147483647;
 
-class Data
+class QueueData
 {
 public:
-	int key,cnt;
+	int id,l,r;
 };
 
 int n,K;
-int W[maxN][maxN];
-int Q[maxN];
-Data Ans,F[maxN];
+int Val[maxN][maxN],Sum[maxN][maxN];
+int F[maxN],G[maxN];
+QueueData Q[maxN];
 
-void Calc(int limit);
-bool operator < (Data A,Data B);
-bool operator <= (Data A,Data B);
-bool operator > (Data A,Data B);
-Data operator + (Data A,Data B);
-Data operator + (Data A,int B);
-int Lower(int u,int v);
+void Calc(RG int C);
+IL bool Better(RG int u,RG int v,RG int tim);
+IL int Beyond(RG int u,RG int v);
 
 int main(){
+	RG int i,j,L,R,pos,mid;
 	Input(n);Input(K);
-	for (int i=1;i<=n;i++) for (int j=1;j<=n;j++) Input(W[i][j]);
-	for (int i=1;i<=n;i++) for (int j=i+1;j<=n;j++) W[i][j]+=W[i][j-1];
+	for (i=1;i<=n;++i) for (j=1;j<=n;++j) Input(Val[i][j]);
+	for (j=1;j<=n;++j) for (i=j-1;i>=1;--i) Val[i][j]+=Val[i+1][j];
+	for (i=1;i<=n;++i) for (j=i;j<=n;++j) Sum[i][j]=Sum[i][j-1]+Val[i][j];
 
-	for (int i=1;i<=n;i++){
-		for (int j=1;j<=n;j++)
-			cout<<W[i][j]<<" ";cout<<endl;
-	}
-
-	int L=-W[1][n],R=W[1][n],pos;
+	L=0;R=Sum[1][n];pos;
 	do{
-		int mid=(L+R)>>1;
+		mid=(L+R)>>1;
 		Calc(mid);
-		if (Ans.cnt>=K) pos=mid,L=mid+1;
+		if (G[n]>=K) pos=mid,L=mid+1;
 		else R=mid-1;
 	}
 	while (L<=R);
-
-	Calc(pos);cout<<"pos:"<<pos<<endl;
-	printf("%d\n",Ans.key-K*pos);return 0;
+	Calc(pos);
+	IO::Print(F[n]-K*pos);
+	IO::Flush();
+	return 0;
 }
 
-void Calc(int limit){
-	cout<<"Calc:"<<limit<<endl;
-	F[0]=((Data){0,0});int L=1,R=1;Q[1]=0;
-	for (int i=1;i<=n;i++){
-		while ((L<R)&&(Lower(Q[L],Q[L+1])<=i)) L++;
-		F[i]=F[Q[L]]+((Data){W[Q[L]+1][i]+limit,1});
-		while ((L<=R)&&(Lower))
+void Calc(RG int C){
+	RG int L=1,R=1,i,pos;Q[1]=((QueueData){0,0,n});
+	for (i=1;i<=n;++i){
+		++Q[L].l;if (Q[L].l>Q[L].r) ++L;
+		F[i]=F[Q[L].id]+Sum[Q[L].id+1][i]+C;G[i]=G[Q[L].id]+1;
+		if ((L>R)||(Better(i,Q[R].id,n))){
+			while ((L<=R)&&(Better(i,Q[R].id,Q[R].l))) --R;
+			if (L>R) Q[++R]=((QueueData){i,i,n});
+			else{
+				pos=Beyond(i,Q[R].id);
+				Q[R].r=pos-1;Q[++R]=((QueueData){i,pos,n});
+			}
+		}
 	}
-	Ans=F[n];
 	return;
 }
 
-bool operator < (Data A,Data B){
-	if (A.key!=B.key) return A.key<B.key;
-	return A.cnt<B.cnt;
+IL bool Better(RG int u,RG int v,RG int tim){
+	RG int key1=F[u]+Sum[u+1][tim],key2=F[v]+Sum[v+1][tim];
+	return ((key1<key2)||((key1==key2)&&(G[u]>=G[v])));
 }
 
-bool operator >= (Data A,Data B){
-	if (A.key!=B.key) return A.key>B.key;
-	return A.cnt>=B.cnt;
-}
-
-bool operator > (Data A,Data B){
-	if (A.key!=B.key) return A.key>B.key;
-	return A.cnt>B.cnt;
-}
-
-Data operator + (Data A,Data B){
-	return ((Data){A.key+B.key,A.cnt+B.cnt});
-}
-
-Data operator + (Data A,int B){
-	return ((Data){A.key+B,A.cnt});
-}
-
-int Lower(int u,int v){
-	if (F[u]+W[u+1][n]<F[v]+W[v+1][n]) return inf;
-	int L=max(u,v),R=n,ret=inf;
+IL int Beyond(RG int u,RG int v){
+	RG int L=v,R=n,ret=0,mid;
 	do{
-		int mid=(L+R)>>1;
-		if (F[u]+W[u+1][mid]>=F[v]+W[v+1][mid]) ret=mid,R=mid-1;
+		mid=(L+R)>>1;
+		if (Better(u,v,mid)) ret=mid,R=mid-1;
 		else L=mid+1;
 	}
 	while (L<=R);
