@@ -41,11 +41,13 @@ int main(){
 	scanf("%d",&m);
 	for (int i=1;i<=m;i++) scanf("%d%d",&Qn[i].l,&Qn[i].r),Qn[i].id=i;
 	sort(&Qn[1],&Qn[m+1],cmp);
+	//for (int i=1;i<=m;i++) cout<<Qn[i].l<<" "<<Qn[i].r<<" "<<Qn[i].id<<endl;
 	//Outp(1,1,n);cout<<endl;
 	for (int i=1,nowr=1;i<=m;i++){
 		while (nowr<Qn[i].r){
 			int mn=inf;
 			Modify(1,1,n,nowr,Seq[nowr+1],mn);nowr++;
+			//cout<<nowr<<":"<<endl;
 			//Outp(1,1,n);cout<<endl;
 		}
 		Ans[Qn[i].id]=Query(1,1,n,Qn[i].l,Qn[i].r);
@@ -83,10 +85,12 @@ void Modify(int now,int l,int r,int pos,int key,int &mn){
 		Mn[now]=min(Mn[now],mn);return;
 	}
 	vector<int>::iterator it=lower_bound(Vr[now].begin(),Vr[now].end(),key);
-	if ( ((it==Vr[now].end())||((*it)-pos>=mn)) && ((it==Vr[now].begin())||(pos-(*(it-1))>=mn)) ){
+	
+	if ( ((it==Vr[now].end())||((*it)-key>=mn)) && ((it==Vr[now].begin())||(key-(*(it-1))>=mn)) ){
 		mn=min(mn,Query(1,1,n,l,pos));
 		return;
 	}
+	//*/
 	int mid=(l+r)>>1;
 	if (pos>=mid+1) Modify(rson,mid+1,r,pos,key,mn),Modify(lson,l,mid,pos,key,mn);
 	else Modify(lson,l,mid,pos,key,mn);
