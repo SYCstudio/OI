@@ -30,14 +30,14 @@ int GetSG(int n,int m){
 	if (n>m) swap(n,m);
 	if (SG[n][m]!=-1) return SG[n][m];
 	if ((n==1)&&(m==1)) return SG[n][m]=0;
-	for (int i=1;i<n;i++) GetSG(i,m),GetSG(n-i,m);
-	for (int i=1;i<m;i++) GetSG(n,i),GetSG(n,m-i);
-	for (int i=1;i<n;i++) use[GetSG(i,m)^GetSG(n-i,m)]=1;
-	for (int i=1;i<m;i++) use[GetSG(n,i)^GetSG(n,m-i)]=1;
+	for (int i=2;i<n-1;i++) GetSG(i,m),GetSG(n-i,m);
+	for (int i=2;i<m-1;i++) GetSG(n,i),GetSG(n,m-i);
+	for (int i=2;i<n-1;i++) use[GetSG(i,m)^GetSG(n-i,m)]=1;
+	for (int i=2;i<m-1;i++) use[GetSG(n,i)^GetSG(n,m-i)]=1;
 	SG[n][m]=0;
 	while (use[SG[n][m]]) SG[n][m]++;
-	for (int i=1;i<n;i++) use[GetSG(i,m)^GetSG(n-i,m)]=0;
-	for (int i=1;i<m;i++) use[GetSG(n,i)^GetSG(n,m-i)]=0;
-	cout<<"SG "<<n<<" "<<m<<":"<<SG[n][m]<<endl;
+	for (int i=2;i<n-1;i++) use[GetSG(i,m)^GetSG(n-i,m)]=0;
+	for (int i=2;i<n-1;i++) use[GetSG(n,i)^GetSG(n,m-i)]=0;
+	//cout<<"SG "<<n<<" "<<m<<":"<<SG[n][m]<<endl;
 	return SG[n][m];
 }
