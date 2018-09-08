@@ -12,7 +12,7 @@ using namespace std;
 
 const int maxN=1510;
 const int maxL=120;
-const ull base=17;
+const ull base=29;
 const int inf=2147483647;
 
 class Heap
@@ -93,7 +93,7 @@ int Merge(int u,int v){
 	if (u==0) return v;
 	if (v==0) return u;
 	PushDown(u);PushDown(v);
-	int rt=H[u].rs=Merge(H[u].rs,v);if (rt!=0) H[rt].fa=u;Update(u);
+	H[u].rs=Merge(H[u].rs,v);if (H[u].rs) H[H[u].rs].fa=u;Update(u);
 	if (H[H[u].ls].rdis<H[H[u].rs].rdis) swap(H[u].ls,H[u].rs);
 	H[u].rdis=H[H[u].rs].rdis+1;
 	return u;
@@ -103,14 +103,13 @@ void Erase(int x){
 	int now=x,top=0;
 	while (now) St[++top]=now,now=H[now].fa;
 	while (top) PushDown(St[top--]);
-	if (Rt[Hash[x]]==x){
+	if (H[x].fa==0){
 		int ls=H[x].ls,rs=H[x].rs;
 		H[ls].fa=H[rs].fa=H[x].ls=H[x].rs=0;
 		Rt[Hash[x]]=Merge(ls,rs);Update(x);
-		if (Rt[Hash[x]]==0) Rt.erase(Hash[x]);
 	}
 	else{
-		int ls=H[x].ls,rs=H[x].rs,fa=H[x].fa;H[ls].fa=H[rs].fa=H[x].ls=H[x].rs=0;
+		int ls=H[x].ls,rs=H[x].rs,fa=H[x].fa;H[ls].fa=H[rs].fa=H[x].ls=H[x].rs=H[x].fa=0;
 		int r=Merge(ls,rs);if (r!=0) H[r].fa=fa;
 		if (H[fa].ls==x) H[fa].ls=r;
 		else H[fa].rs=r;
@@ -128,3 +127,4 @@ void Insert(int x){
 	H[Rt[Hash[x]]].Ans=max(H[Rt[Hash[x]]].Ans,H[Rt[Hash[x]]].mx);
 	return;
 }
+
