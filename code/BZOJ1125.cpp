@@ -3,49 +3,128 @@
 #include<cstdlib>
 #include<cstring>
 #include<algorithm>
-#include<set>
+#include<map>
 using namespace std;
 
 #define ll long long
 #define ull unsigned long long
 #define mem(Arr,x) memset(Arr,x,sizeof(Arr))
 
-const int maxN=1010;
-const int maxL=110;
-const ull base=13;
+const int maxN=1510;
+const int maxL=120;
+const ull base=17;
 const int inf=2147483647;
 
-int n,m,L;
+class Heap
+{
+public:
+	int fa,ls,rs,size,rdis;
+	int Ans,mx;
+};
+
+int n,L,m;
 char str[maxN][maxL];
-ull Hash[maxN],Base[maxN];
-int Ans[maxN];
-multiset<ull> Ms;
+ull Hash[maxN],Pow[maxN];
+int rcnt,St[maxN];
+Heap H[maxN];
+map<ull,int> Rt;
+
+void PushDown(int u);
+void Update(int u);
+int Merge(int u,int v);
+void Erase(int x);
+void Insert(int x);
 
 int main(){
-	Base[0]=1;for (int i=1;i<maxN;i++) Base[i]=Base[i-1]*base;
-	scanf("%d%d%d",&n,&L,&m);
+	Pow[0]=1;for (int i=1;i<maxN;i++) Pow[i]=Pow[i-1]*base;
+	scanf("%d%d%d",&n,&L,&m);rcnt=n;
 	for (int i=1;i<=n;i++) scanf("%s",str[i]+1);
 	for (int i=1;i<=n;i++){
-		for (int j=1;j<=L;j++) Hash[i]=Hash[i]*base+(ull)(str[i][j]-'a');
-		Ms.insert(Hash[i]);
+		Hash[i]=0;H[i].size=H[i].Ans=1;
+		for (int j=1;j<=L;j++) Hash[i]=Hash[i]*base+str[i][j]-'a';
+		Insert(i);
 	}
-	for (int i=1;i<=n;i++) Ans[i]=Ms.count(Hash[i]);
-	//cout<<"Input over"<<endl;
-	//for (int i=1;i<=n;i++) cout<<Hash[i]<<" ";cout<<endl;
+
 	while (m--){
-		int p1,w1,p2,w2;scanf("%d%d%d%d",&p1,&w1,&p2,&w2);
-		Ms.erase(Ms.find(Hash[p1]));if (p1!=p2) Ms.erase(Ms.find(Hash[p2]));
-		Hash[p1]-=(ull)(str[p1][w1]-'a')*Base[L-w1];
-		Hash[p2]-=(ull)(str[p2][w2]-'a')*Base[L-w2];
+		int p1,p2,w1,w2;
+		scanf("%d%d%d%d",&p1,&w1,&p2,&w2);
+		Erase(p1);if (p1!=p2) Erase(p2);
+
+		Hash[p1]-=Pow[L-w1]*(str[p1][w1]-'a');
+		Hash[p2]-=Pow[L-w2]*(str[p2][w2]-'a');
 		swap(str[p1][w1],str[p2][w2]);
-		Hash[p1]+=(ull)(str[p1][w1]-'a')*Base[L-w1];
-		Hash[p2]+=(ull)(str[p2][w2]-'a')*Base[L-w2];
-		Ms.insert(Hash[p1]);if (p1!=p2) Ms.insert(Hash[p2]);
-		for (int i=1;i<=n;i++) Ans[i]=max(Ans[i],(int)Ms.count(Hash[i]));
+		Hash[p1]+=Pow[L-w1]*(str[p1][w1]-'a');
+		Hash[p2]+=Pow[L-w2]*(str[p2][w2]-'a');
+
+		Insert(p1);if (p1!=p2) Insert(p2);
+
 		//for (int i=1;i<=n;i++) cout<<Hash[i]<<" ";cout<<endl;
+		//cout<<"fa ls rs size ans mx"<<endl;
+		//for (int i=1;i<=n;i++) cout<<" "<<H[i].fa<<"  "<<H[i].ls<<"  "<<H[i].rs<<"    "<<H[i].size<<"   "<<H[i].Ans<<"  "<<H[i].mx<<endl;
 	}
 
-	for (int i=1;i<=n;i++) printf("%d\n",Ans[i]);
+	for (int i=1;i<=n;i++) Erase(i);
 
+	for (int i=1;i<=n;i++) printf("%d\n",H[i].Ans);
 	return 0;
+}
+
+void PushDown(int u){
+	if (H[u].ls){
+		int v=H[u].ls;
+		H[v].Ans=max(H[v].Ans,H[u].mx);
+		H[v].mx=max(H[v].mx,H[u].mx);
+	}
+	if (H[u].rs){
+		int v=H[u].rs;
+		H[v].Ans=max(H[v].Ans,H[u].mx);
+		H[v].mx=max(H[v].mx,H[u].mx);
+	}
+	H[u].mx=0;
+	return;
+}
+
+void Update(int u){
+	H[u].size=H[H[u].ls].size+H[H[u].rs].size+1;
+	return;
+}
+
+int Merge(int u,int v){
+	if (u==0) return v;
+	if (v==0) return u;
+	PushDown(u);PushDown(v);
+	int rt=H[u].rs=Merge(H[u].rs,v);if (rt!=0) H[rt].fa=u;Update(u);
+	if (H[H[u].ls].rdis<H[H[u].rs].rdis) swap(H[u].ls,H[u].rs);
+	H[u].rdis=H[H[u].rs].rdis+1;
+	return u;
+}
+
+void Erase(int x){
+	int now=x,top=0;
+	while (now) St[++top]=now,now=H[now].fa;
+	while (top) PushDown(St[top--]);
+	if (Rt[Hash[x]]==x){
+		int ls=H[x].ls,rs=H[x].rs;
+		H[ls].fa=H[rs].fa=H[x].ls=H[x].rs=0;
+		Rt[Hash[x]]=Merge(ls,rs);Update(x);
+		if (Rt[Hash[x]]==0) Rt.erase(Hash[x]);
+	}
+	else{
+		int ls=H[x].ls,rs=H[x].rs,fa=H[x].fa;H[ls].fa=H[rs].fa=H[x].ls=H[x].rs=0;
+		int r=Merge(ls,rs);if (r!=0) H[r].fa=fa;
+		if (H[fa].ls==x) H[fa].ls=r;
+		else H[fa].rs=r;
+		int now=fa;
+		while (now) Update(now),now=H[now].fa;
+		Update(x);
+	}
+	return;
+}
+
+void Insert(int x){
+	if (Rt.count(Hash[x])==0) Rt[Hash[x]]=x;
+	else Rt[Hash[x]]=Merge(Rt[Hash[x]],x);
+	H[Rt[Hash[x]]].mx=max(H[Rt[Hash[x]]].mx,H[Rt[Hash[x]]].size);
+	H[Rt[Hash[x]]].Ans=max(H[Rt[Hash[x]]].Ans,H[Rt[Hash[x]]].mx);
+	return;
 }
