@@ -46,15 +46,17 @@ int main(){
 	for (int i=1;i<=idcnt;i++)
 		if (Match[i]==-1){
 			mem(vis,0);
-			if (Hungary(i)) tot++;
+			if (Hungary(i)) tot+=2;
 		}
+
+	//for (int i=1;i<=idcnt;i++) cout<<Match[i]<<" ";cout<<endl;
 
 	int cnt=0;
 	for (int i=1;i<=idcnt;i++)
 		if (Match[i]==-1) Ans[++cnt]=i;
 		else{
-			mem(vis,0);
-			if (dfs(i)) Ans[++cnt]=i;
+			mem(vis,0);vis[i]=1;
+			if (dfs(Match[i])) Ans[++cnt]=i;
 		}
 
 	if (cnt==0) printf("LOSE\n");

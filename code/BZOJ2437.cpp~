@@ -1,0 +1,24 @@
+#include<iostream>
+#include<cstdio>
+#include<cstdlib>
+#include<cstring>
+#include<algorithm>
+using namespace std;
+
+#define ll long long
+#define mem(Arr,x) memset(Arr,x,sizeof(Arr))
+
+const int maxMap=41;
+const int maxN=maxMap*maxMap;
+const int maxM=maxN*8;
+const int inf=2147483647;
+
+int n,m;
+int idcnt=0,Id[maxMap][maxMap];
+int edgecnt=0,Head[maxN],Next[maxM],V[maxM];
+int Match[maxN];
+bool vis[maxN];
+
+int main(){
+	scanf("%d%d",&n,&m);
+}
