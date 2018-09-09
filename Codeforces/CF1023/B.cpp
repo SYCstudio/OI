@@ -8,17 +8,18 @@ using namespace std;
 #define ll long long
 #define mem(Arr,x) memset(Arr,x,sizeof(Arr))
 
-const int maxMap=41;
-const int maxN=maxMap*maxMap;
-const int maxM=maxN*8;
+const int maxN=1;
 const int inf=2147483647;
 
-int n,m;
-int idcnt=0,Id[maxMap][maxMap];
-int edgecnt=0,Head[maxN],Next[maxM],V[maxM];
-int Match[maxN];
-bool vis[maxN];
+ll n,K;
 
 int main(){
-	scanf("%d%d",&n,&m);
+	scanf("%lld%lld",&n,&K);
+	n=min(n,K-1);
+	ll mn=K-n;
+	if (mn>n){
+		printf("0\n");return 0;
+	}
+	printf("%lld\n",(n-mn+1)/2);
+	return 0;
 }
