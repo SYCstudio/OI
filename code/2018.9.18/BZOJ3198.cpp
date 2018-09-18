@@ -3,7 +3,6 @@
 #include<cstdlib>
 #include<cstring>
 #include<algorithm>
-#include<set>
 using namespace std;
 
 #define ll long long
@@ -11,26 +10,34 @@ using namespace std;
 #define mem(Arr,x) memset(Arr,x,sizeof(Arr))
 
 const int maxN=101000;
-const ull base=19260817;
+const ull base=1000007;
+const int Mod=8e5;
+const int maxHash=7000100;
 const int inf=2147483647;
+
+class HashData{
+public:
+	ull key;
+	int cnt;
+};
 
 int n,K;
 ll Cnt[7],C[10][10];
-multiset<ull> St[7],now;
+int nodecnt,Head[7][Mod],Next[maxHash];
+HashData H[maxHash];
+
+int Insert(int cnt,ull key);
 
 int main(){
 	scanf("%d%d",&n,&K);
 	for (int i=1;i<=n;i++){
 		int Spr[7],Seq[7];scanf("%d%d%d%d%d%d",&Spr[0],&Spr[1],&Spr[2],&Spr[3],&Spr[4],&Spr[5]);
-		now.clear();
 		for (int S=1;S<(1<<6);S++){
 			int cnt=0;ull hash=0;
 			for (int j=0;j<6;j++)
 				if (S&(1<<j)) hash=hash*base+1ull*Spr[j]+1,cnt++;
 				else hash=hash*base;
-			if (now.count(hash)) continue;now.insert(hash);
-			//if (St[cnt].count(hash)) cout<<i<<" "<<cnt<<" "<<S<<" "<<hash<<" "<<St[cnt].count(hash)<<endl;
-			Cnt[cnt]+=St[cnt].count(hash);St[cnt].insert(hash);
+			Cnt[cnt]+=Insert(cnt,hash);//Insert(cnt,hash);
 		}
 		//cout<<i<<":";
 		//for (int j=1;j<=6;j++) cout<<Cnt[j]<<" ";cout<<endl;
@@ -51,4 +58,14 @@ int main(){
 	//for (int i=0;i<=6;i++) cout<<Cnt[i]<<" ";cout<<endl;
 
 	printf("%lld\n",Cnt[K]);return 0;
+}
+
+int Insert(int cnt,ull key){
+	int tkey=key%Mod;
+	for (int i=Head[cnt][tkey];i;i=Next[i])
+		if (H[i].key==key){
+			H[i].cnt++;return H[i].cnt-1;
+		}
+	Next[++nodecnt]=Head[cnt][tkey];Head[cnt][tkey]=nodecnt;H[nodecnt]=((HashData){key,1});
+	return 0;
 }
