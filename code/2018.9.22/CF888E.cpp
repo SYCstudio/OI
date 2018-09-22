@@ -42,6 +42,8 @@ int main(){
 	int mx=max(N1[n1],N2[n2]);
 	for (int i=1;i<=n1;i++){
 		int p=lower_bound(&N2[1],&N2[n2+1],m-1-N1[i])-N2;
+		if (N2[p]>m-1-N1[i]) p--;
+		//cout<<i<<" "<<p<<":"<<N1[i]+N2[p]<<endl;
 		mx=max(mx,N1[i]+N2[p]);
 		mx=max(mx,(N1[i]+N2[n2])%m);
 	}
