@@ -72,26 +72,27 @@ int main(){
 	while (!Q.empty()){
 		int x=Q.front().x,y=Q.front().y,ff=Q.front().f;Q.pop();
 		//cout<<"Q:"<<x<<" "<<y<<" "<<ff<<endl;
-		if (Input[x+F1[ff^2]][y+F2[ff^2]]=='.'){
-			if (inq[ff][x+F1[ff^2]][y+F2[ff^2]]==0){
-				inq[ff][x+F1[ff^2]][y+F2[ff^2]]=1;
-				ok[x+F1[ff^2]][y+F2[ff^2]]=1;
-				Q.push((QueueData){x+F1[ff^2],y+F2[ff^2],ff});
-				//cout<<x<<" "<<y<<" "<<ff<<" -> "<<x+F1[ff^2]<<" "<<y+F2[ff^2]<<" "<<ff<<endl;
-			}
+		int xx=x+F1[ff^2],yy=y+F2[ff^2];
+		if (Input[xx][yy]=='.'){
+			if (inq[ff][xx][yy]==0)
+				inq[ff][xx][yy]=1,ok[xx][yy]=1,Q.push((QueueData){xx,yy,ff});
 		}
-		for (int i=0,sz=Bcc[Id[x+F1[ff]][y+F2[ff]]].size();i<sz;i++) mark[Bcc[Id[x+F1[ff]][y+F2[ff]]][i]]=1;
-		for (int f=0;f<4;f++)
-			if ((f!=ff)&&(x+F1[f]<=n)&&(x+F1[f]>=1)&&(y+F2[f]<=m)&&(y+F2[f]>=1)&&(inq[f][x][y]==0)){
+		int u=x+F1[ff],v=y+F2[ff];
+		for (int i=0,sz=Bcc[Id[u][v]].size();i<sz;i++) mark[Bcc[Id[u][v]][i]]=1;
+		for (int f=0;f<4;f++){
+			xx=x+F1[f];yy=y+F2[f];
+			if ((f!=ff)&&(xx<=n)&&(xx>=1)&&(yy<=m)&&(yy>=1)&&(inq[f][x][y]==0)){
 				bool flag=0;
-				for (int i=0,sz=Bcc[Id[x+F1[f]][y+F2[f]]].size();i<sz;i++)
-					if (mark[Bcc[Id[x+F1[f]][y+F2[f]]][i]]) {flag=1;break;}
+				for (int i=0,sz=Bcc[Id[xx][yy]].size();i<sz;i++)
+					if (mark[Bcc[Id[xx][yy]][i]]) {flag=1;break;}
 				if ((flag)&&(inq[f][x][y]==0)){
+					//cout<<x<<" "<<y<<" "<<ff<<" -> "<<f<<endl;
 					inq[f][x][y]=1;ok[x][y]=1;
 					Q.push((QueueData){x,y,f});
 				}
 			}
-		for (int i=0,sz=Bcc[Id[x+F1[ff]][y+F2[ff]]].size();i<sz;i++) mark[Bcc[Id[x+F1[ff]][y+F2[ff]]][i]]=0;
+		}
+		for (int i=0,sz=Bcc[Id[u][v]].size();i<sz;i++) mark[Bcc[Id[u][v]][i]]=0;
 	}
 
 	while (Qs--){
@@ -103,6 +104,7 @@ int main(){
 }
 
 void Add_Edge(int u,int v){
+	//cout<<"Add:"<<u<<" "<<v<<endl;
 	Next[++edgecnt]=Head[u];Head[u]=edgecnt;V[edgecnt]=v;
 	return;
 }
@@ -118,8 +120,8 @@ void tarjan(int u,int fa){
 					bcccnt++;int v;
 					//cout<<bcccnt<<":";
 					do Bcc[v=St[top--]].push_back(bcccnt)/*,cout<<v<<" "*/;
-					while (v!=u);
-					St[++top]=u;//cout<<endl;
+					while (v!=V[i]);
+					Bcc[u].push_back(bcccnt);//cout<<endl;
 				}
 			}
 			else low[u]=min(low[u],dfn[V[i]]);
@@ -132,15 +134,18 @@ void Bfs(){
 	Input[bxx][bxy]='#';
 	do{
 		int x=Q.front().x,y=Q.front().y;Q.pop();
-		for (int f=0;f<4;f++)
-			if ((x+F1[f]<=n)&&(x+F1[f]>=1)&&(y+F2[f]<=m)&&(y+F2[f]>=1)&&(Input[x+F1[f]][y+F2[f]]=='.')&&(vis[x+F1[f]][y+F2[f]]==0))
-				vis[x+F1[f]][y+F2[f]]=1,Q.push((QueueData){x+F1[f],y+F2[f],0});
+		for (int f=0;f<4;f++){
+			int xx=x+F1[f],yy=y+F2[f];
+			if ((xx<=n)&&(xx>=1)&&(yy<=m)&&(yy>=1)&&(Input[xx][yy]=='.')&&(vis[xx][yy]==0)) vis[xx][yy]=1,Q.push((QueueData){xx,yy,0});
+		}
 	}
 	while (!Q.empty());
 	Input[bxx][bxy]='.';
 	ok[bxx][bxy]=1;
-	for (int f=0;f<4;f++)
-		if (vis[bxx+F1[f]][bxy+F2[f]]) inq[f][bxx][bxy]=1,ok[bxx][bxy]=1,Q.push((QueueData){bxx,bxy,f});
+	for (int f=0;f<4;f++){
+		int xx=bxx+F1[f],yy=bxy+F2[f];
+		if (vis[xx][yy]) Q.push((QueueData){xx,yy,f});
+	}
 	return;
 }
 /*
@@ -167,3 +172,4 @@ void Bfs(){
 5 1
 5 2
 //*/
+
