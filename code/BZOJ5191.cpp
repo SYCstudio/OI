@@ -8,73 +8,82 @@ using namespace std;
 #define ll long long
 #define mem(Arr,x) memset(Arr,x,sizeof(Arr))
 #define Find(Arr,sz,x) (lower_bound(&Arr[1],&Arr[sz+1],x)-Arr)
+#define lson (now<<1)
+#define rson (lson|1)
 
-const int inf=147483647;
+const int maxN=101000;
+const int inf=2000000000;
+const int meminf=2139062143;
 
-class SegmentData
-{
-public:
-	int mn,lz,ls,rs;
-	SegmentData(){mn=inf;lz=inf;return;}
-};
+ll numx,X[maxN+maxN],numy,Y[maxN+maxN];
 
 class Data
 {
 public:
-	int x,y,t;
+	ll x,y,t;
 };
 
-const int maxN=101000;
-
 int n,m;
-SegmentData S[maxN*400];
-int rt1[maxN],rt2[maxN],rt3[maxN],rt4[maxN],nodecnt;
 Data D[maxN],Q[maxN];
-int numx,X[maxN+maxN],numy,Y[maxN+maxN];
+ll Ans[maxN];
+int Mn[maxN*8];
 
 bool cmp(Data A,Data B);
-void Modify(int &now,int l,int r,int ql,int qr,int mn);
-int Query(int now,int l,int r,int pos);
+void Modify(int now,int l,int r,int pos,int key);
+int Query(int now,int l,int r,int ql,int qr);
 
 int main(){
+	//freopen("in.in","r",stdin);freopen("out.out","w",stdout);
 	scanf("%d%d",&n,&m);
-	for (int i=1;i<=n;i++) scanf("%d%d%d",&D[i].x,&D[i].y,&D[i].t),X[++numx]=D[i].x,Y[++numy]=D[i].y;
-	for (int i=1;i<=m;i++) scanf("%d%d",&Q[i].x,&Q[i].y),X[++numx]=Q[i].x,Y[++numy]=Q[i].y;
+	for (int i=1;i<=n;i++) scanf("%lld%lld%lld",&D[i].x,&D[i].y,&D[i].t),X[++numx]=D[i].x,Y[++numy]=D[i].y;
+	for (int i=1;i<=m;i++) scanf("%lld%lld",&Q[i].x,&Q[i].y),X[++numx]=Q[i].x,Y[++numy]=Q[i].y,Ans[i]=abs(Q[i].x-Q[i].y),Q[i].t=i;
 	sort(&X[1],&X[numx+1]);sort(&Y[1],&Y[numy+1]);numx=unique(&X[1],&X[numx+1])-X-1;numy=unique(&Y[1],&Y[numy+1])-Y-1;
+
 
 	for (int i=1;i<=n;i++) D[i].x=Find(X,numx,D[i].x),D[i].y=Find(Y,numy,D[i].y);
 	for (int i=1;i<=m;i++) Q[i].x=Find(X,numx,Q[i].x),Q[i].y=Find(Y,numy,Q[i].y);
+	
+	sort(&D[1],&D[n+1],cmp);sort(&Q[1],&Q[m+1],cmp);
 
-	sort(&D[1],&D[n+1],cmp);
-
-	for (int i=1;i<=n;i++) cout<<D[i].x<<" "<<D[i].y<<" "<<D[i].t<<endl;
-	for (int i=1;i<=m;i++) cout<<Q[i].x<<" "<<Q[i].y<<endl;
-
-	for (int i=n,j=numx+1;i>=1;i--){
-		while (j>D[i].x) rt1[j-1]=rt1[j],--j;
-		Modify(rt1[j],1,numy,1,D[i].y,D[i].t+X[D[i].x]+Y[D[i].y]);
+	//for (int i=1;i<=numx;i++) cout<<X[i]<<" ";cout<<endl;
+	//for (int i=1;i<=numy;i++) cout<<Y[i]<<" ";cout<<endl;
+	
+	mem(Mn,127);
+	for (int i=m,j=n;i>=1;i--){
+		while ((j)&&(D[j].x>=Q[i].x)) Modify(1,1,numy,D[j].y,D[j].t+X[D[j].x]+Y[D[j].y]),j--;
+		//cerr<<"A "<<i<<" "<<j<<" "<<Q[i].y<<endl;
+		if (Query(1,1,numy,Q[i].y,numy)!=meminf) Ans[Q[i].t]=min(Ans[Q[i].t],(ll)Query(1,1,numy,Q[i].y,numy)-X[Q[i].x]-Y[Q[i].y]);
+		//if (i==n) cout<<Query(1,1,numy,Q[i].y,numy)<<endl;
 	}
-	for (int i=1,j=0;i<=n;i++){
-		while (j<D[i].x) rt2[j+1]=rt2[j],++j;
-		Modify(rt2[j],1,numy,1,D[i].y,D[i].t-X[D[i].x]+Y[D[i].y]);
-	}
-	for (int i=n,j=numx+1;i>=1;i--){
-		while (j>D[i].x) rt3[j-1]=rt3[j],--j;
-		Modify(rt3[j],1,numy,D[i].y,numy,D[i].t+X[D[i].x]-Y[D[i].y]);
-	}
-	for (int i=1,j=0;i<=n;i++){
-		while (j<D[i].x) rt4[j+1]=rt4[j],++j;
-		Modify(rt4[j],1,numy,D[i].y,numy,D[i].t-X[D[i].x]-Y[D[i].y]);
-	}
-	cout<<Query(rt1[numx],1,numy,1)<<endl;
 
-	for (int i=1;i<=m;i++) cout<<Query(rt1[Q[i].x],1,numy,Q[i].y)<<" "<<Query(rt2[Q[i].x],1,numy,Q[i].y)<<" "<<Query(rt3[Q[i].x],1,numy,Q[i].y)<<" "<<Query(rt4[Q[i].x],1,numy,Q[i].y)<<endl;
+	mem(Mn,127);
+	for (int i=1,j=1;i<=m;i++){
+		while ((j<=n)&&(D[j].x<=Q[i].x)) Modify(1,1,numy,D[j].y,D[j].t-X[D[j].x]+Y[D[j].y]),j++;
+		//cerr<<"B "<<i<<" "<<j<<endl;
+		if (Query(1,1,numy,Q[i].y,numy)!=meminf) Ans[Q[i].t]=min(Ans[Q[i].t],(ll)Query(1,1,numy,Q[i].y,numy)+X[Q[i].x]-Y[Q[i].y]);
+		//cout<<i<<" "<<j<<endl;
+		//if (i==n) cout<<Query(1,1,numy,Q[i].y,numy)<<endl;
+	}
 
-	for (int i=1;i<=m;i++) printf("%d\n",min(min(Query(rt1[Q[i].x],1,numy,Q[i].y)-X[Q[i].x]-Y[Q[i].y]
-												 ,Query(rt2[Q[i].x],1,numy,Q[i].y)+X[Q[i].x]-Y[Q[i].y])
-											 ,min(Query(rt3[Q[i].x],1,numy,Q[i].y)-X[Q[i].x]+Y[Q[i].y]
-												  ,Query(rt4[Q[i].x],1,numy,Q[i].y)+X[Q[i].x]+Y[Q[i].y])));
+	mem(Mn,127);
+	for (int i=m,j=n;i>=1;i--){
+		while ((j)&&(D[j].x>=Q[i].x)) Modify(1,1,numy,D[j].y,D[j].t+X[D[j].x]-Y[D[j].y]),j--;
+		//cerr<<"C "<<i<<" "<<j<<endl;
+		if (Query(1,1,numy,1,Q[i].y)!=meminf) Ans[Q[i].t]=min(Ans[Q[i].t],(ll)Query(1,1,numy,1,Q[i].y)-X[Q[i].x]+Y[Q[i].y]);
+		//if (i==n) cout<<Query(1,1,numy,1,Q[i].y)<<endl;
+	}
 
+	mem(Mn,127);
+	for (int i=1,j=1;i<=m;i++){
+		while ((j<=n)&&(D[j].x<=Q[i].x)) Modify(1,1,numy,D[j].y,D[j].t-X[D[j].x]-Y[D[j].y]),j++;
+		//cerr<<"D "<<i<<" "<<j<<endl;
+		if (Query(1,1,numy,1,Q[i].y)!=meminf) Ans[Q[i].t]=min(Ans[Q[i].t],(ll)Query(1,1,numy,1,Q[i].y)+X[Q[i].x]+Y[Q[i].y]);
+		//if (i==n) cout<<Query(1,1,numy,1,Q[i].y)<<endl;
+	}
+	
+	for (int i=1;i<=m;i++) printf("%lld\n",Ans[i]);
+	
+	
 	return 0;
 }
 
@@ -83,24 +92,29 @@ bool cmp(Data A,Data B){
 	return A.y<B.y;
 }
 
-void Modify(int &now,int l,int r,int ql,int qr,int mn){
-	S[++nodecnt]=S[now];now=nodecnt;S[now].mn=min(S[now].mn,mn);
-	if ((l==ql)&&(r==qr)){
-		S[now].lz=min(S[now].lz,mn);return;
-	}
+void Modify(int now,int l,int r,int pos,int key){
+	//cerr<<"Modify:"<<now<<" "<<l<<" "<<r<<" "<<pos<<" "<<key<<endl;
+	Mn[now]=min(Mn[now],key);
+	if (l==r) return;
 	int mid=(l+r)>>1;
-	if (qr<=mid) Modify(S[now].ls,l,mid,ql,qr,mn);
-	else if (ql>=mid+1) Modify(S[now].rs,mid+1,r,ql,qr,mn);
-	else{
-		Modify(S[now].ls,l,mid,ql,mid,mn);
-		Modify(S[now].rs,mid+1,r,mid+1,qr,mn);
-	}
-	return;
+	if (pos<=mid) Modify(lson,l,mid,pos,key);
+	else Modify(rson,mid+1,r,pos,key);
 }
 
-int Query(int now,int l,int r,int pos){
-	if (l==r) return min(S[now].mn,S[now].lz);
+int Query(int now,int l,int r,int ql,int qr){
+	//cerr<<"Query:"<<now<<" "<<l<<" "<<r<<" "<<ql<<" "<<qr<<endl;
+	if ((l==ql)&&(r==qr)) return Mn[now];
 	int mid=(l+r)>>1;
-	if (pos<=mid) return min(S[now].lz,Query(S[now].ls,l,mid,pos));
-	else return min(S[now].lz,Query(S[now].rs,mid+1,r,pos));
+	if (qr<=mid) return Query(lson,l,mid,ql,qr);
+	else if (ql>=mid+1) return Query(rson,mid+1,r,ql,qr);
+	else return min(Query(lson,l,mid,ql,mid),Query(rson,mid+1,r,mid+1,qr));
 }
+
+/*
+2 3
+0 10 1
+13 8 2
+1 12
+5 2
+20 7
+//*/
