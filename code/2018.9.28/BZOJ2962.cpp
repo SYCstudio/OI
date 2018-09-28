@@ -49,18 +49,19 @@ int main(){
 	for (int i=0;i<maxN;i++)
 		for (int j=C[i][0]=1;j<=min(20,i);j++)
 			C[i][j]=(C[i-1][j]+C[i-1][j-1])%Mod;
+	
 	scanf("%d%d",&n,&Q);
 	for (int i=1;i<=n;i++) scanf("%d",&Seq[i]);
 	Build(1,1,n);
-	Outp(1,1,n);cout<<endl;
+	//Outp(1,1,n);cout<<endl;
 
 	while (Q--){
 		char opt;int a,b,c;
 		scanf(" %c%d%d%d",&opt,&a,&b,&c);
 		if (opt=='I') Modify(1,1,n,a,b,(c%Mod+Mod)%Mod);
 		if (opt=='R') Renega(1,1,n,a,b);
-		if (opt=='Q') printf("%d\n",Query(1,1,n,a,b).f[c]);
-		Outp(1,1,n);cout<<endl;
+		if (opt=='Q') printf("%d\n",(Query(1,1,n,a,b).f[c]%Mod+Mod)%Mod);
+		//Outp(1,1,n);cout<<endl;
 	}
 
 	return 0;
@@ -69,7 +70,7 @@ int main(){
 void Build(int now,int l,int r){
 	S[now].len=(r-l+1);
 	if (l==r){
-		S[now].D.f[1]=Seq[l];return;
+		S[now].D.f[1]=Seq[l]%Mod;S[now].D.f[0]=1;return;
 	}
 	int mid=(l+r)>>1;
 	Build(lson,l,mid);Build(rson,mid+1,r);
@@ -97,14 +98,12 @@ void Nega(int now){
 }
 
 void Plus(int now,int c){
-	cout<<"Plus:"<<now<<" "<<c<<endl;
+	//cout<<"Plus:"<<now<<" "<<c<<endl;
 	c=(c%Mod+Mod)%Mod;
 	S[now].ad=(S[now].ad+c)%Mod;
-	int g[22]={0};S[now].D.f[0]=1;
-	for (int i=1;i<=20;i++)
-		for (int j=1,x=c;j<=i;j++,x=1ll*x*c%Mod)
-			g[i]=(1ll*x*S[now].D.f[i-j]%Mod*C[S[now].len-(i-j)][j]%Mod+g[i])%Mod;
-	for (int i=1;i<=20;i++) S[now].D.f[i]=g[i];
+	for (int i=min(S[now].len,20);i>=0;i--)
+		for (int j=i-1,x=c;j>=0;j--,x=1ll*x*c%Mod)
+			S[now].D.f[i]=(1ll*S[now].D.f[i]%Mod+1ll*x*S[now].D.f[j]%Mod*C[S[now].len-j][i-j]%Mod)%Mod;
 	return;
 }
 
@@ -148,19 +147,18 @@ Data Query(int now,int l,int r,int ql,int qr){
 }
 
 Data operator + (Data A,Data B){
-	Data rt;
-	for (int i=1;i<=20;i++) rt.f[i]=(A.f[i]+B.f[i])%Mod;
-	for (int i=1;i<=20;i++)
-		for (int j=1;j<i;j++)
-			rt.f[i]=(rt.f[i]+1ll*A.f[j]*B.f[i-j]%Mod)%Mod;
+	Data rt;mem(rt.f,0);
+	for (int i=0;i<=20;i++)
+		for (int j=0;j<=i;j++)
+			rt.f[i]=(1ll*rt.f[i]+1ll*A.f[j]*B.f[i-j]%Mod)%Mod;
 	return rt;
 }
 
 void Outp(int now,int l,int r){
-	PushDown(now);
-	cout<<now<<"["<<l<<","<<r<<"]"<<endl;
-	for (int i=1;i<=20;i++) cout<<S[now].D.f[i]<<" ";cout<<endl;
+	cout<<now<<"["<<l<<","<<r<<"]:";
+	for (int i=0;i<=20;i++) cout<<S[now].D.f[i]<<" ";cout<<endl;
 	if (l==r) return;
+	PushDown(now);
 	int mid=(l+r)>>1;
 	Outp(lson,l,mid);Outp(rson,mid+1,r);
 	return;
