@@ -41,7 +41,7 @@ void Spfa();
 int main(){
 	int TTT;scanf("%d",&TTT);
 	while (TTT--){
-		nx=ny=edgecnt=0;mem(Nx,0);mem(Ny,0);mem(stu,0);mem(Id,0);mem(Head,-1);mem(Exi,0);
+		nx=ny=edgecnt=pcnt=0;mem(Nx,0);mem(Ny,0);mem(stu,0);mem(Id,0);mem(Head,-1);mem(Exi,0);
 		scanf("%d%d%d%d",&Sx,&Sy,&Tx,&Ty);
 		Nx[++nx]=Sx;Nx[++nx]=Tx;Ny[++ny]=Sy,Ny[++ny]=Ty;
 		scanf("%d",&n);
@@ -66,14 +66,14 @@ int main(){
 		sort(&Nx[1],&Nx[nx+1]);nx=unique(&Nx[1],&Nx[nx+1])-Nx-1;
 		sort(&Ny[1],&Ny[ny+1]);ny=unique(&Ny[1],&Ny[ny+1])-Ny-1;
 		
-		cout<<"Nx:";for (int i=1;i<=nx;i++) cout<<Nx[i]<<" ";cout<<endl;
-		cout<<"Ny:";for (int i=1;i<=ny;i++) cout<<Ny[i]<<" ";cout<<endl;
+		//cout<<"Nx:";for (int i=1;i<=nx;i++) cout<<Nx[i]<<" ";cout<<endl;
+		//cout<<"Ny:";for (int i=1;i<=ny;i++) cout<<Ny[i]<<" ";cout<<endl;
 		
 		Sx=Find(Nx,nx,Sx);Sy=Find(Ny,ny,Sy);Tx=Find(Nx,nx,Tx);Ty=Find(Ny,ny,Ty);
 		for (int i=1;i<=n;i++) A[i]=Find(Nx,nx,A[i]),B[i]=Find(Ny,ny,B[i]),C[i]=Find(Nx,nx,C[i]),D[i]=Find(Ny,ny,D[i]);
 
-		cout<<Sx<<" "<<Sy<<" "<<Tx<<" "<<Ty<<endl;
-		for (int i=1;i<=n;i++) cout<<"("<<A[i]<<","<<B[i]<<") ("<<C[i]<<","<<D[i]<<")"<<endl;
+		//cout<<Sx<<" "<<Sy<<" "<<Tx<<" "<<Ty<<endl;
+		//for (int i=1;i<=n;i++) cout<<"("<<A[i]<<","<<B[i]<<") ("<<C[i]<<","<<D[i]<<")"<<endl;
 		
 		for (int i=1;i<=n;i++){
 			if (Exi[i]==0) continue;
@@ -82,11 +82,13 @@ int main(){
 			stu[A[i]][B[i]]=stu[A[i]][D[i]]=stu[C[i]][B[i]]=stu[C[i]][D[i]]=-1;
 		}
 		stu[Sx][Sy]=stu[Tx][Ty]=-1;
+		/*
 		for (int i=1;i<=nx;i++){
 			for (int j=1;j<=ny;j++)
 				cout<<setw(4)<<stu[i][j];
 			cout<<endl;
 		}
+		//*/
 		for (int i=1;i<=n;i++){
 			if (Exi[i]==0) continue;
 			Go(A[i],B[i],-1,0);Go(A[i],B[i],0,-1);Go(A[i],D[i],-1,0);Go(A[i],D[i],0,1);
@@ -94,26 +96,33 @@ int main(){
 			Id[A[i]][B[i]]=Id[A[i]][D[i]]=Id[C[i]][B[i]]=Id[C[i]][D[i]]=1;
 		}
 		Id[Sx][Sy]=Id[Tx][Ty]=1;
+		Go(Sx,Sy,0,1);Go(Sx,Sy,1,0);Go(Sx,Sy,0,-1);Go(Sx,Sy,-1,0);
+		Go(Tx,Ty,0,1);Go(Tx,Ty,1,0);Go(Tx,Ty,0,-1);Go(Tx,Ty,-1,0);
 
+		/*
 		cout<<endl;
 		for (int i=1;i<=nx;i++){
 			for (int j=1;j<=ny;j++)
 				cout<<setw(4)<<Id[i][j];
 			cout<<endl;
 		}
-		
+		//*/
 		for (int i=1;i<=nx;i++)
 			for (int j=1;j<=ny;j++){
 				if (Id[i][j]) P[++pcnt]=((Point){i,j,pcnt});
 				if ((i==Sx)&&(j==Sy)) S=pcnt;
 				if ((i==Tx)&&(j==Ty)) T=pcnt;
+				//if (Id[i][j]) cout<<pcnt<<":"<<P[i].x<<" "<<P[i].y<<endl;
 			}
 		sort(&P[1],&P[pcnt+1],cmpx);
+		
+		//for (int i=1;i<=pcnt;i++) cout<<"("<<P[i].x<<" "<<P[i].y<<") ";cout<<endl;
+		
 		for (int i=1,j;i<=pcnt;i=j){
 			j=i+1;
 			while (P[j].x==P[i].x){
 				if ((stu[P[j-1].x][P[j-1].y]==-1)||(stu[P[j].x][P[j].y]==-1)||((stu[P[j-1].x][P[j-1].y]==2)&&(stu[P[j].x][P[j].y]==1)))
-					Add_Edge(P[j-1].id,P[j].id,abs(Ny[P[j].y]-Ny[P[j-1].y]));
+					Add_Edge(P[j-1].id,P[j].id,Ny[P[j].y]-Ny[P[j-1].y]);
 				j++;
 			}
 		}
@@ -122,7 +131,7 @@ int main(){
 			j=i+1;
 			while (P[j].y==P[i].y){
 				if ((stu[P[j-1].x][P[j-1].y]==-1)||(stu[P[j].x][P[j].y]==-1)||((stu[P[j-1].x][P[j-1].y]==2)&&(stu[P[j].x][P[j].y]==1)))
-					Add_Edge(P[j-1].id,P[j].id,abs(Nx[P[j].x]-Nx[P[j-1].x]));
+					Add_Edge(P[j-1].id,P[j].id,Nx[P[j].x]-Nx[P[j-1].x]);
 				j++;
 			}
 		}
@@ -134,6 +143,7 @@ int main(){
 }
 
 void Add_Edge(int u,int v,int w){
+	//cout<<"Add:"<<u<<" "<<v<<" "<<w<<endl;
 	Next[++edgecnt]=Head[u];Head[u]=edgecnt;V[edgecnt]=v;W[edgecnt]=w;
 	Next[++edgecnt]=Head[v];Head[v]=edgecnt;V[edgecnt]=u;W[edgecnt]=w;
 	return;
@@ -162,7 +172,7 @@ void Spfa(){
 	for (int i=1;i<=pcnt;i++) Dist[i]=inf;
 	Dist[S]=0;inq[S]=1;Q.push(S);
 	while (!Q.empty()){
-		int u=Q.front();Q.pop();
+		int u=Q.front();Q.pop();//cout<<u<<endl;
 		for (int i=Head[u];i!=-1;i=Next[i])
 			if (Dist[V[i]]>Dist[u]+W[i]){
 				Dist[V[i]]=Dist[u]+W[i];
@@ -174,3 +184,19 @@ void Spfa(){
 	}
 	return;
 }
+/*
+2
+1 7 7 8
+2
+2 5 3 8
+4 10 6 7
+2 1 5 4
+1
+3 1 4 3
+
+1
+1 7 7 8
+2
+2 5 3 8
+4 10 6 7
+//*/
