@@ -15,6 +15,7 @@ const int maxN=2010;
 const int maxNode=maxN*20;
 const int maxM=maxNode*4;
 const int inf=2147483647;
+const ll INF=1e18;
 
 class Point
 {
@@ -24,24 +25,27 @@ public:
 
 int n,Sx,Sy,Tx,Ty,S,T;
 int A[maxN],B[maxN],C[maxN],D[maxN];
-int nx,Nx[maxNode],ny,Ny[maxNode];
-int edgecnt=0,Head[maxNode],Next[maxM],V[maxM],W[maxM];
+int nx,ny;
+ll Nx[maxN],Ny[maxN];
+int edgecnt=0,Head[maxNode],Next[maxM],V[maxM];
+ll W[maxM];
 int stu[maxN][maxN],Id[maxN][maxN],pcnt;
 Point P[maxNode];
 bool Exi[maxN],inq[maxNode];
-int Dist[maxNode];
+ll Dist[maxNode];
 queue<int> Q;
 
 void Go(int x,int y,int dx,int dy);
 bool cmpx(Point P1,Point P2);
 bool cmpy(Point P1,Point P2);
-void Add_Edge(int u,int v,int w);
+void Add_Edge(int u,int v,ll w);
 void Spfa();
 
 int main(){
 	int TTT;scanf("%d",&TTT);
 	while (TTT--){
-		nx=ny=edgecnt=pcnt=0;mem(Nx,0);mem(Ny,0);mem(stu,0);mem(Id,0);mem(Head,-1);mem(Exi,0);
+		nx=ny=edgecnt=pcnt=0;mem(Nx,0);mem(Ny,0);mem(stu,0);mem(Id,0);mem(Head,-1);mem(Exi,0);mem(inq,0);mem(P,0);
+		while (!Q.empty()) Q.pop();
 		scanf("%d%d%d%d",&Sx,&Sy,&Tx,&Ty);
 		Nx[++nx]=Sx;Nx[++nx]=Tx;Ny[++ny]=Sy,Ny[++ny]=Ty;
 		scanf("%d",&n);
@@ -107,9 +111,10 @@ int main(){
 			cout<<endl;
 		}
 		//*/
+		pcnt=0;
 		for (int i=1;i<=nx;i++)
 			for (int j=1;j<=ny;j++){
-				if (Id[i][j]) P[++pcnt]=((Point){i,j,pcnt});
+				if (Id[i][j]) ++pcnt,P[pcnt]=((Point){i,j,pcnt});
 				if ((i==Sx)&&(j==Sy)) S=pcnt;
 				if ((i==Tx)&&(j==Ty)) T=pcnt;
 				//if (Id[i][j]) cout<<pcnt<<":"<<P[i].x<<" "<<P[i].y<<endl;
@@ -121,7 +126,7 @@ int main(){
 		for (int i=1,j;i<=pcnt;i=j){
 			j=i+1;
 			while (P[j].x==P[i].x){
-				if ((stu[P[j-1].x][P[j-1].y]==-1)||(stu[P[j].x][P[j].y]==-1)||((stu[P[j-1].x][P[j-1].y]==2)&&(stu[P[j].x][P[j].y]==1)))
+				if ((stu[P[j-1].x][P[j-1].y]==-1)||(stu[P[j].x][P[j].y]==-1)||(stu[P[j-1].x][P[j-1].y]>=stu[P[j].x][P[j].y]))
 					Add_Edge(P[j-1].id,P[j].id,Ny[P[j].y]-Ny[P[j-1].y]);
 				j++;
 			}
@@ -130,19 +135,19 @@ int main(){
 		for (int i=1,j;i<=pcnt;i=j){
 			j=i+1;
 			while (P[j].y==P[i].y){
-				if ((stu[P[j-1].x][P[j-1].y]==-1)||(stu[P[j].x][P[j].y]==-1)||((stu[P[j-1].x][P[j-1].y]==2)&&(stu[P[j].x][P[j].y]==1)))
+				if ((stu[P[j-1].x][P[j-1].y]==-1)||(stu[P[j].x][P[j].y]==-1)||(stu[P[j-1].x][P[j-1].y]>=stu[P[j].x][P[j].y]))
 					Add_Edge(P[j-1].id,P[j].id,Nx[P[j].x]-Nx[P[j-1].x]);
 				j++;
 			}
 		}
 		Spfa();
-		if (Dist[T]==inf) printf("No Path\n");
-		else printf("%d\n",Dist[T]);
+		if (Dist[T]==INF) printf("No Path\n");
+		else printf("%lld\n",Dist[T]);
 	}
 	return 0;
 }
 
-void Add_Edge(int u,int v,int w){
+void Add_Edge(int u,int v,ll w){
 	//cout<<"Add:"<<u<<" "<<v<<" "<<w<<endl;
 	Next[++edgecnt]=Head[u];Head[u]=edgecnt;V[edgecnt]=v;W[edgecnt]=w;
 	Next[++edgecnt]=Head[v];Head[v]=edgecnt;V[edgecnt]=u;W[edgecnt]=w;
@@ -169,7 +174,7 @@ bool cmpy(Point P1,Point P2){
 }
 
 void Spfa(){
-	for (int i=1;i<=pcnt;i++) Dist[i]=inf;
+	for (int i=1;i<=pcnt;i++) Dist[i]=INF;
 	Dist[S]=0;inq[S]=1;Q.push(S);
 	while (!Q.empty()){
 		int u=Q.front();Q.pop();//cout<<u<<endl;
