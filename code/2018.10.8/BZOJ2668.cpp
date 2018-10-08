@@ -35,33 +35,51 @@ void Add_Edge(int u,int v,int flow,int w);
 bool Spfa();
 
 int main(){
+	//freopen("in","r",stdin);
 	mem(Head,-1);
 	scanf("%d%d",&n,&m);
 	S=n*m*3+1;T=n*m*3+2;
 	for (int i=1,idcnt=0;i<=n;i++) for (int j=1;j<=m;j++) Id[i][j]=++idcnt,idcnt+=2;
 
 	int bcnt1=0,bcnt2=0;
-	for (int i=1;i<=n;i++){
-		scanf("%s",ST[i]+1);
-		for (int j=1;j<=m;j++) if (ST[i][j]=='1') Add_Edge(S,Id[i][j],1,0),Add_Edge(Id[i][j],Id[i][j]+1,1,0),bcnt1++;
-	}
-	for (int i=1;i<=n;i++){
-		scanf("%s",ED[i]+1);
-		for (int j=1;j<=m;j++){
-			if (ED[i][j]=='1') Add_Edge(Id[i][j]+2,T,1,0),bcnt2++;
-			if ((ST[i][j]=='1')&&(ED[i][j]=='1')) Add_Edge(Id[i][j],Id[i][j]+2,1,0);
-		}
-	}
+	for (int i=1;i<=n;i++) scanf("%s",ST[i]+1);
+	for (int i=1;i<=n;i++) scanf("%s",ED[i]+1);
 	for (int i=1;i<=n;i++){
 		scanf("%s",Input+1);
-		for (int j=1;j<=m;j++) Add_Edge(Id[i][j]+1,Id[i][j]+2,Input[j]-'0',0);
+		for (int j=1;j<=m;j++)
+			if ((ST[i][j]=='1')&&(ED[i][j]=='1')){
+				Add_Edge(S,Id[i][j]+1,1,0);
+				Add_Edge(Id[i][j]+1,T,1,0);
+				Add_Edge(Id[i][j],Id[i][j]+1,(Input[j]-'0')/2,0);
+				Add_Edge(Id[i][j]+1,Id[i][j]+2,(Input[j]-'0')/2,0);
+				bcnt1++;bcnt2++;
+			}
+			else if (ST[i][j]=='1'){
+				Add_Edge(S,Id[i][j]+1,1,0);
+				int c=(Input[j]-'0')/2;
+				Add_Edge(Id[i][j],Id[i][j]+1,c,0);
+				Add_Edge(Id[i][j]+1,Id[i][j]+2,Input[j]-'0'-c,0);
+				bcnt1++;
+			}
+			else if (ED[i][j]=='1'){
+				Add_Edge(Id[i][j]+1,T,1,0);
+				int c=(Input[j]-'0')/2;
+				Add_Edge(Id[i][j],Id[i][j]+1,Input[j]-'0'-c,0);
+				Add_Edge(Id[i][j]+1,Id[i][j]+2,c,0);
+				bcnt2++;
+			}
+			else{
+				int c=(Input[j]-'0')/2;
+				Add_Edge(Id[i][j],Id[i][j]+1,c,0);
+				Add_Edge(Id[i][j]+1,Id[i][j]+2,c,0);
+			}
 	}
 	for (int i=1;i<=n;i++)
 		for (int j=1;j<=m;j++)
 			for (int f=0;f<8;f++){
 				int xx=i+F1[f],yy=j+F2[f];
 				if ((xx<=0)||(yy<=0)||(xx>n)||(yy>m)) continue;
-				Add_Edge(Id[i][j]+2,Id[xx][yy]+1,inf,1);
+				Add_Edge(Id[i][j]+2,Id[xx][yy],inf,1);
 			}
 	
 	if (bcnt1!=bcnt2){
@@ -71,7 +89,7 @@ int main(){
 	int flow=0,w=0;
 	while (Spfa()){
 		int now=T;flow+=Flow[T];w+=Dist[T]*Flow[T];
-		cout<<Dist[T]<<" "<<Flow[T]<<endl;
+		//cout<<Dist[T]<<" "<<Flow[T]<<endl;
 		while (now!=S){
 			E[Path[now]].flow-=Flow[T];
 			E[Path[now]^1].flow+=Flow[T];
