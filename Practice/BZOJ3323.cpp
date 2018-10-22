@@ -38,11 +38,12 @@ void Rotate(int x);
 void Splay(int x,int goal);
 int Kth(int k);
 int Calc(int x);
+void Outp(int x);
 
 int main(){
-	//freopen("in","r",stdin);freopen("out","w",stdout);
+	freopen("in","r",stdin);freopen("out","w",stdout);
 	scanf("%d",&Q);
-	root=Build(-1,100010,0);
+	root=Build(-1,10,0);
 	char ipt[8];int l,r,v;
 	while (Q--){
 		//cout<<"Q is:"<<Q<<endl;
@@ -82,10 +83,11 @@ int main(){
 		}
 		if (ipt[0]=='q'){
 			scanf("%d",&v);
-			Pow[0]=1;for (int i=1;i<=100010;i++) Pow[i]=1ll*Pow[i-1]*v%Mod;
+			Pow[0]=1;for (int i=1;i<=200010;i++) Pow[i]=1ll*Pow[i-1]*v%Mod;
 			printf("%d\n",Calc(root));
 		}
 		//Calc(root);
+		Outp(root);cout<<endl;
 	}
 	return 0;
 }
@@ -183,8 +185,17 @@ int Kth(int k){
 int Calc(int x){
 	//cout<<"Calc:"<<x<<endl;
 	PushDown(x);
-	int ret=1ll*S[x].key*Pow[S[x].id]%Mod;
+	int ret=0;
+	if (S[x].id!=-1) ret=1ll*S[x].key*Pow[S[x].id]%Mod;
 	if (S[x].ch[0]) ret=(ret+Calc(S[x].ch[0]))%Mod;
 	if (S[x].ch[1]) ret=(ret+Calc(S[x].ch[1]))%Mod;
 	return ret;
+}
+
+void Outp(int x){
+	PushDown(x);
+	if (S[x].ch[0]) Outp(S[x].ch[0]);
+	if (S[x].id!=-1) cout<<S[x].key<<" ";
+	if (S[x].ch[1]) Outp(S[x].ch[1]);
+	return;
 }
