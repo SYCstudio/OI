@@ -41,53 +41,55 @@ int Calc(int x);
 void Outp(int x);
 
 int main(){
-	freopen("in","r",stdin);freopen("out","w",stdout);
 	scanf("%d",&Q);
-	root=Build(-1,10,0);
+	root=Build(-1,100100,0);
 	char ipt[8];int l,r,v;
 	while (Q--){
-		//cout<<"Q is:"<<Q<<endl;
 		scanf("%s",ipt);
 		if ((ipt[0]=='m')&&(strlen(ipt)==3)){
-			scanf("%d%d%d",&l,&r,&v);
+			scanf("%d%d%d",&l,&r,&v);v%=Mod;
 			int L=Kth(l-1),R=Kth(r+1);
 			Splay(L,0);Splay(R,L);
 			Mul(S[R].ch[0],v);
 		}
 		if (ipt[0]=='a'){
 			scanf("%d%d%d",&l,&r,&v);
-			int L=Kth(l-1),R=Kth(r+1);
-			//cout<<L<<" "<<R<<endl;
+			int L=Kth(l-1),R=Kth(r+1);v%=Mod;
 			Splay(L,0);Splay(R,L);
 			Plus(S[R].ch[0],v);
 		}
 		if ((ipt[0]=='m')&&(strlen(ipt)==4)){
 			scanf("%d%d",&l,&r);
 
-			//cout<<"A"<<endl;
-			int L=Kth(l-1),R=Kth(r+1),a=Kth(r),b=Kth(r+2);
-			Splay(L,0);Splay(R,L);Idplus(S[R].ch[0],1);
+			if (l==r){
+				int P=Kth(l);
+				Splay(P,0);int key=S[P].key;S[P].key=0;
+				P=Kth(l+1);
+				Splay(P,0);S[P].key=(S[P].key+key)%Mod;
+			}
+			else
+			{
+				int L=Kth(l-1),R=Kth(r+1),a=Kth(r),b=Kth(r+2);
+				Splay(L,0);Splay(R,L);PushDown(L);PushDown(R);Idplus(S[R].ch[0],1);
 
-			//cout<<"B"<<endl;
-			Splay(a,0);Splay(b,a);int id=S[b].ch[0],key=S[id].key;
-			S[id].init();S[b].ch[0]=0;
+				Splay(a,0);Splay(b,a);PushDown(a);PushDown(b);
+				int id=S[b].ch[0],key=S[id].key;
+				S[id].init();S[b].ch[0]=0;
 
-			//cout<<"C"<<endl;
-			L=Kth(l-1);R=Kth(l+1);
-			Splay(L,0);Splay(R,L);
-			S[R].ch[0]=id;S[id].fa=R;S[id].id=l;
+				L=Kth(l-1);R=Kth(l+1);
+				Splay(L,0);Splay(R,L);
+				S[R].ch[0]=id;S[id].fa=R;S[id].id=l;
 			
-			L=Kth(r-1);R=Kth(r+1);
-			Splay(L,0);Splay(R,L);
-			Plus(S[R].ch[0],key);
+				L=Kth(r);R=Kth(r+2);
+				Splay(L,0);Splay(R,L);
+				Plus(S[R].ch[0],key);
+			}
 		}
 		if (ipt[0]=='q'){
 			scanf("%d",&v);
 			Pow[0]=1;for (int i=1;i<=200010;i++) Pow[i]=1ll*Pow[i-1]*v%Mod;
 			printf("%d\n",Calc(root));
 		}
-		//Calc(root);
-		Outp(root);cout<<endl;
 	}
 	return 0;
 }
@@ -96,7 +98,6 @@ int Build(int l,int r,int fa){
 	int mid=(l+r)>>1;
 	int now=++nodecnt;
 	S[now].id=mid;S[now].fa=fa;
-	//cout<<"Build:"<<l<<" "<<r<<endl;
 	if (l==r) return now;
 	if (l<mid) S[now].ch[0]=Build(l,mid-1,now);
 	if (mid<r) S[now].ch[1]=Build(mid+1,r,now);
@@ -152,13 +153,11 @@ void Rotate(int x){
 int Stk[maxN];
 
 void Splay(int x,int goal){
-	//cout<<"Splay:"<<x<<" "<<goal<<endl;
 	int now=x,top=1;Stk[top]=now=x;
 	while (S[now].fa) Stk[++top]=now=S[now].fa;
 	while (top) PushDown(Stk[top--]);
 	while (S[x].fa!=goal){
 		int y=S[x].fa,z=S[y].fa;
-		//cout<<x<<" "<<y<<" "<<z<<endl;
 		if (z!=goal)
 			((x==S[y].ch[0])^(y==S[z].ch[0]))?(Rotate(x)):(Rotate(y));
 		Rotate(x);
@@ -168,10 +167,8 @@ void Splay(int x,int goal){
 }
 
 int Kth(int k){
-	//cout<<"GetKth:"<<k<<endl;
 	int now=root;
 	while (1){
-		//cout<<now<<" "<<S[now].id<<":"<<S[now].ch[0]<<" "<<S[now].ch[1]<<endl;
 		PushDown(now);
 		if (S[now].id==k){
 			Splay(now,0);
@@ -195,7 +192,7 @@ int Calc(int x){
 void Outp(int x){
 	PushDown(x);
 	if (S[x].ch[0]) Outp(S[x].ch[0]);
-	if (S[x].id!=-1) cout<<S[x].key<<" ";
+	if (S[x].id!=-1) cout<<S[x].key<<"["<<S[x].id<<"] ";
 	if (S[x].ch[1]) Outp(S[x].ch[1]);
 	return;
 }
