@@ -35,12 +35,13 @@ int main(){
 		int sum=0,x=i;for (int j=1;j<=n;j++) sum=sum+C[j]/i;
 		F[i]=min(F[i],sum);
 		while (x>1){
-			sum=0;if (i==100) cout<<i<<"->"<<x<<endl;
-			for (int j=1;j<=n;j++) sum=sum+(C[j]%i)/(i/x);
-			F[i/x]=min(F[i/x],F[i]+sum);x/=Low[x];
+			sum=0;//if (i==100) cout<<i<<"->"<<x<<endl;
+			for (int j=1;j<=n;j++) sum=sum+(C[j]%i)/(i/Low[x]);
+			F[i/Low[x]]=min(F[i/Low[x]],F[i]+sum);
+			int p=Low[x];while (x%p==0) x/=p;
 		}
 	}
-	for (int i=1;i<=mx;i++) cout<<i<<" "<<F[i]<<endl;
+	//for (int i=1;i<=mx;i++) cout<<i<<" "<<F[i]<<endl;
 	printf("%d\n",F[1]);
 	return 0;
 }
