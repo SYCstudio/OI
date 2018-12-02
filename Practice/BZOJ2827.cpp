@@ -26,6 +26,7 @@ map<pair<int,int>,int> Rt;
 
 void Insert(int id);
 void Erase(int id);
+bool cmp(int a,int b);
 void Update(int x);
 void PushDown(int x);
 void GM(int x,ll key);
@@ -33,6 +34,7 @@ void Rotate(int x);
 void Splay(int &rt,int x,int goal);
 int Prev(int &rt,int x);
 int Next(int &rt,int x);
+void dfs_pushdown(int x);
 
 int main(){
 	scanf("%d",&n);
@@ -45,11 +47,18 @@ int main(){
 		int v,x,y;scanf("%d%d%d",&v,&x,&y);
 		Erase(v);X[v]=x;Y[v]=y;Insert(v);
 	}
+	for (int i=1;i<=n;i++)
+		if (Rt.count(make_pair(X[i],Y[i]))){
+			dfs_pushdown(Rt[make_pair(X[i],Y[i])]);
+			Rt.erase(make_pair(X[i],Y[i]));
+		}
+	for (int i=1;i<=n;i++) printf("%lld\n",S[i].ans);
+	return 0;
 }
 
 void Insert(int id){
-	pair p=make_pair(X[id],Y[id]);
-	if (Rt.cound(p)==0) Rt[p]=id;
+	pair<int,int> p=make_pair(X[id],Y[id]);
+	if (Rt.count(p)==0) Rt[p]=id;
 	else{
 		int now=Rt[p];
 		do{
@@ -70,14 +79,14 @@ void Insert(int id){
 		now=Rt[p];
 		while (S[now].ch[1]) now=S[now].ch[1];
 		Splay(Rt[p],now,0);GM(S[now].ch[0],(S[now].size-1)*S[now].key);
-		int pre=Prev(now);Splay(Rt[p],pre,0);
+		int pre=Prev(Rt[p],now);Splay(Rt[p],pre,0);
 		GM(S[pre].ch[1],(S[pre].size-1)*S[pre].key);
 	}
 	return;
 }
 
 void Erase(int id){
-	pair p=make_pair(X[id],Y[id]);
+	pair<int,int> p=make_pair(X[id],Y[id]);
 	if (S[Rt[p]].size==1) Rt.erase(p);
 	else{
 		if (Prev(Rt[p],id)==-1){
@@ -90,11 +99,16 @@ void Erase(int id){
 		}
 		else{
 			int pre=Prev(Rt[p],id),nxt=Next(Rt[p],id);
-			Splay(Rt[p],pre,0);Splay(Rt[p].nxt,pre);
+			Splay(Rt[p],pre,0);Splay(Rt[p],nxt,pre);
 			S[id].fa=0;S[nxt].ch[1]=0;Update(nxt);Update(pre);
 		}
 	}
 	return;
+}
+
+bool cmp(int a,int b){
+	if (S[a].key!=S[b].key) return S[a].key<S[b].key;
+	else return a<b;
 }
 
 void Update(int x){
@@ -147,3 +161,24 @@ int Next(int &rt,int x){
 	int now=S[x].ch[1];while (S[now].ch[0]) now=S[now].ch[0];
 	return now;
 }
+
+void dfs_pushdown(int x){
+	PushDown(x);
+	if (S[x].ch[0]) dfs_pushdown(S[x].ch[0]);
+	if (S[x].ch[1]) dfs_pushdown(S[x].ch[1]);
+	return;
+}
+/*
+5
+1 1 1
+3 1 2
+4 4 4
+2 0 1
+2 2 3
+5
+1 1 2
+2 4 4
+2 4 3
+3 0 1
+5 0 1
+//*/
