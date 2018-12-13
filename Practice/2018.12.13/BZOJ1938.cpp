@@ -41,6 +41,7 @@ void Modify(int now,int l,int r,int ql,int qr,int a,int b,int st);
 ll Query(int now,int l,int r,int ql,int qr);
 
 int main(){
+	//freopen("3.in","r",stdin);freopen("out","w",stdout);
 	scanf("%d%d",&n,&m);
 	for (int i=1;i<=m;i++){
 		scanf("%d%d%d",&O[i].opt,&O[i].l,&O[i].r);Num[++num]=O[i].l;Num[++num]=O[i].r+1;
@@ -66,16 +67,16 @@ int Dsp(int x){
 
 void Label(int now,int l,int r){
 	//cout<<"Label:"<<now<<" "<<l<<" "<<r<<" ["<<Num[l]<<","<<Num[r+1]-1<<"]"<<endl;
-	S[now].l=Num[l];S[now].r=Num[r+1]-1;if (l==r) return;
+	S[now].l=Num[l];S[now].r=Num[r+1]-1;S[now].a=-1;if (l==r) return;
 	int mid=(l+r)>>1;Label(lson,l,mid);Label(rson,mid+1,r);
 	return;
 }
 
 void PushDown(int now){
-	if (S[now].a==0) return;
+	if (S[now].a==-1) return;
 	Calc(lson,S[now].a,S[now].b,S[now].st);
 	Calc(rson,S[now].a,S[now].b,S[now].st);
-	S[now].a=0;return;
+	S[now].a=-1;return;
 }
 
 void Calc(int now,int a,int b,int st){
@@ -133,4 +134,5 @@ ll Query(int now,int l,int r,int ql,int qr){
 1 433635188 446454742 409689 539218
 2 329325087 499889243
 //*/
+
 
