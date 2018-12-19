@@ -12,7 +12,7 @@ const int inf=2147483647;
 
 int n;
 int Fac[maxN],IFac[maxN];
-int A[maxN],B[maxN],IB[maxN],I1[maxN],I2[maxN],Rader[maxN];
+int B1[maxN],B2[maxN],IB[maxN],I1[maxN],I2[maxN],Rader[maxN];
 
 int QPow(int x,int cnt);
 void NTT(int *P,int N,int opt);
@@ -22,23 +22,27 @@ int main(){
 	Fac[0]=IFac[0]=1;for (int i=1;i<maxN;i++) Fac[i]=1ll*Fac[i-1]*i%Mod;
 	IFac[maxN-1]=QPow(Fac[maxN-1],Mod-2);for (int i=maxN-2;i>=1;i--) IFac[i]=1ll*IFac[i+1]*(i+1)%Mod;
 	scanf("%d",&n);
-	for (int i=1;i<=n;i++) A[i]=1ll*QPow(2,1ll*i*(i-1)/2%(Mod-1))*IFac[i]%Mod;
-	for (int i=0;i<=n;i++) B[i]=1ll*QPow(2,1ll*i*(i-1)/2%(Mod-1))*IFac[i]%Mod;
-	int N=1;while (N<=n) N<<=1;
+	for (int i=1;i<=n;i++) B1[i]=1ll*QPow(2,(1ll*i*(i-1)/2)%(Mod-1))*IFac[i]%Mod,B2[i]=B1[i];
+	B2[0]=1;int N=1;while (N<=n) N<<=1;
 
-	for (int i=0;i<N;i++) cout<<A[i]<<" ";cout<<endl;
-	for (int i=0;i<N;i++) cout<<B[i]<<" ";cout<<endl;
+	//for (int i=0;i<N;i++) cout<<B1[i]<<" ";cout<<endl;
+	//for (int i=0;i<N;i++) cout<<B2[i]<<" ";cout<<endl;
 	
-	PolyInv(B,IB,N);N=1;while (N<=n+n) N<<=1;
-	NTT(A,N,1);NTT(IB,N,1);for (int i=0;i<N;i++) A[i]=1ll*A[i]*IB[i]%Mod;NTT(A,N,-1);
+	PolyInv(B2,IB,N);while (N<=n+n) N<<=1;
 
-	for (int i=0;i<N;i++) cout<<A[i]<<" ";cout<<endl;
+	//for (int i=0;i<N;i++) cout<<IB[i]<<" ";cout<<endl;
 	
-	int sum=1ll*Fac[n]*QPow(n,Mod-2)%Mod*QPow(2,(1ll*n*(n-1)/2-n)%(Mod-1))%Mod;
-
-	cout<<"sum:"<<sum<<endl;
-	
-	printf("%lld\n",1ll*sum*QPow(1ll*A[n]*Fac[n]%Mod,Mod-2));return 0;
+	NTT(B1,N,1);NTT(IB,N,1);
+	for (int i=0;i<N;i++) B1[i]=1ll*B1[i]*IB[i]%Mod;
+	NTT(B1,N,-1);
+	if (n>=1) printf("1\n");
+	if (n>=2) printf("-1\n");
+	for (int i=3;i<=n;i++){
+		int sum=1ll*Fac[i]*QPow(i,Mod-2)%Mod*QPow(2,(1ll*i*(i-1)/2-i)%(Mod-1))%Mod;
+		//cout<<i<<" "<<sum<<" "<<1ll*B1[i]*Fac[i]%Mod<<endl;
+		printf("%lld\n",1ll*sum*QPow(1ll*B1[i]*Fac[i]%Mod,Mod-2)%Mod);
+	}
+	return 0;
 }
 
 int QPow(int x,int cnt){
