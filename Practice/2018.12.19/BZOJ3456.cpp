@@ -22,8 +22,8 @@ int main(){
 	for (int i=1,mul=1;i<=n;mul=1ll*mul*i%Mod,i++) A[i]=1ll*QPow(2,1ll*i*(i-1)/2%(Mod-1))*QPow(mul,Mod-2)%Mod;
 	for (int i=0,mul=1;i<=n;i++,mul=1ll*mul*i%Mod) B[i]=1ll*QPow(2,1ll*i*(i-1)/2%(Mod-1))*QPow(mul,Mod-2)%Mod;
 	int N=1;while (N<=n) N<<=1;
-	for (int i=0;i<N;i++) cout<<A[i]<<" ";cout<<endl;
-	for (int i=0;i<N;i++) cout<<B[i]<<" ";cout<<endl;
+	//for (int i=0;i<N;i++) cout<<A[i]<<" ";cout<<endl;
+	//for (int i=0;i<N;i++) cout<<B[i]<<" ";cout<<endl;
 	PolyInv(B,IB,N);
 	
 	N=1;while (N<=(n+n)) N<<=1;
