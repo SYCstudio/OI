@@ -25,8 +25,8 @@ void NTT(int *P,int opt);
 int main(){
 	scanf("%s",Input);n=strlen(Input);
 	for (int i=0;i<n;i++)
-		if (Input[i]=='0') A1[i]=1,B2[n-i-1]=1;
-		else if (Input[i]=='1') B1[n-i-1]=1,A2[i]=1;
+		if (Input[i]=='0') B2[n-i-1]=1;
+		else if (Input[i]=='1') A2[i]=1;
 	N=1;L=0;while (N<n+n) ++L,N<<=1;
 	for (int i=0;i<N;i++) Rader[i]=(Rader[i>>1]>>1)|((i&1)<<(L-1));
 
@@ -35,12 +35,14 @@ int main(){
 	//for (int i=0;i<N;i++) cout<<A2[i]<<" ";cout<<endl;
 	//for (int i=0;i<N;i++) cout<<B2[i]<<" ";cout<<endl<<endl;
 	
-	Mul(A1,B1);Mul(A2,B2);
+	//Mul(A1,B1);
+	Mul(A2,B2);
 
 	//for (int i=0;i<N;i++) cout<<A1[i]<<" ";cout<<endl;
 	//for (int i=0;i<N;i++) cout<<A2[i]<<" ";cout<<endl;
 
-	for (int i=0;i<n-i-1;i++) swap(A1[i],A1[n-i-1]),swap(A2[i],A2[n-i-1]);
+	for (int i=0;i<n-i-1;i++) //swap(A1[i],A1[n-i-1]),
+								  swap(A2[i],A2[n-i-1]);
 
 	//for (int i=0;i<N;i++) cout<<A1[i]<<" ";cout<<endl;
 	//for (int i=0;i<N;i++) cout<<A2[i]<<" ";cout<<endl;
@@ -48,7 +50,7 @@ int main(){
 	ll Ans=1ll*n*n;
 	for (int i=1;i<n;i++){
 		bool flag=1;
-		for (int j=n-i;j<=n;j=j+n-i) if ((A1[j])||(A2[j])) {flag=0;break;}
+		for (int j=n-i;j<=n;j=j+n-i) if ((A2[n+j-1])||(A2[j])) {flag=0;break;}
 		//cout<<i<<" "<<flag<<endl;
 		if (flag) Ans^=1ll*i*i;
 	}
@@ -86,4 +88,3 @@ void NTT(int *P,int opt){
 	}
 	return;
 }
-
