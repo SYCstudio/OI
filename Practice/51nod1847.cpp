@@ -3,10 +3,12 @@
 #include<cstdlib>
 #include<cmath>
 #include<map>
+#include<cstring>
 using namespace std;
 
 #define uint unsigned int
 #define ll long long
+#define mem(Arr,x) memset(Arr,x,sizeof(Arr))
 
 const int maxN=10100000;
 
@@ -19,7 +21,7 @@ uint QPow(uint x,int cnt);
 
 namespace Min25
 {
-	int n,srt,num,Num[maxN+maxN],Id[maxN];
+	int n,srt,num,Num[maxN+maxN],Id[maxN+maxN];
 	uint G[maxN+maxN];
 
 	uint KSum(int n,int K);
@@ -37,29 +39,39 @@ namespace Du
 int main(){
 	int n,K;scanf("%d%d",&n,&K);
 	Init(K);uint Ans=0;
+	for (int i=1;i<=n;i++){
+		cout<<Min25::Calc(i,K)<<" "<<Du::Calc(n/i)<<" "<<i<<" "<<n/i<<endl;
+		Ans=Ans+(Min25::Calc(i,K)-Min25::Calc(i-1,K))*Du::Calc(n/i);
+	}
+	/*
 	for (int i=1,j;i<=n;i=j+1){
 		j=n/(n/i);
 		Ans=Ans+(Min25::Calc(j,K)-Min25::Calc(i-1,K))*Du::Calc(n/i);
 	}
+	//*/
 	printf("%u\n",Ans);return 0;
 }
 
 void Init(int K){
-	notprime[1]=1;Phi[1]=1;
+	notprime[1]=1;Phi[1]=1;Pow[1]=1;
 	for (int i=2;i<maxN;i++){
 		if (notprime[i]==0) P[++pcnt]=i,Phi[i]=i-1,Pow[i]=QPow(i,K);
 		for (int j=1;(j<=pcnt)&&(1ll*i*P[j]<maxN);j++){
 			notprime[i*P[j]]=1;Pow[i*P[j]]=Pow[i]*Pow[P[j]];
-			if (i%P[i]==0){
+			if (i%P[j]==0){
 				Phi[i*P[j]]=Phi[i]*P[j];break;
 			}
 			Phi[i*P[j]]=Phi[i]*(P[j]-1);
 		}
 	}
-	for (int i=1;i<=pcnt;i++) PSum[i]=PSum[i]+P[i];
-	for (int i=1;i<maxN;i++) PhiSum[i]=PhiSum[i]+Phi[i];
+	for (int i=1;i<=pcnt;i++) PSum[i]=PSum[i-1]+Pow[P[i]];
+	for (int i=1;i<maxN;i++) PhiSum[i]=PhiSum[i-1]+Phi[i];
 	Stl[0][0]=1;
 	for (int i=1;i<=K;i++) for (int j=1;j<=K;j++) Stl[i][j]=Stl[i-1][j-1]+Stl[i-1][j]*j;
+	//for (int i=1;i<=20;i++) cout<<P[i]<<" ";cout<<endl;
+	//for (int i=1;i<=20;i++) cout<<Phi[i]<<" ";cout<<endl;
+	//for (int i=1;i<=20;i++) cout<<Pow[i]<<" ";cout<<endl;
+	//for (int i=1;i<=20;i++) cout<<PhiSum[i]<<" ";cout<<endl;
 	return;
 }
 
@@ -83,19 +95,32 @@ namespace Min25
 				else mul=mul*j;
 			ret=ret+mul*Stl[K][i];
 		}
+		//cout<<"GetKSum:"<<n<<" "<<K<<" "<<ret<<endl;
 		return ret;
 	}
 	
 	uint Calc(int nn,int K){
-		num=0;n=nn;srt=sqrt(nn);
+		//cout<<"Min25:"<<nn<<" "<<K<<endl;
+		num=0;n=nn;srt=sqrt(n);mem(Id,0);
 		for (int i=1,j;i<=n;i=j+1){
 			j=n/i;Num[++num]=j;G[num]=KSum(j,K)-1;
 			if (j<=srt) Id[j]=num;
 			else Id[i+maxN]=num;
+			j=n/j;
 		}
-		for (int i=1;1ll*P[i]*P[i]<=n;i++)
+		//for (int i=1;i<=num;i++) cout<<G[i]<<" ";cout<<endl;
+		for (int i=1;1ll*P[i]*P[i]<=n;i++){
 			for (int j=1;1ll*P[i]*P[i]<=Num[j];j++)
-				G[j]=G[j]-(G[GetId(Num[j]/P[i])]-PSum[j-1])*P[j];
+				G[j]=G[j]-(G[GetId(Num[j]/P[i])]-PSum[i-1])*Pow[P[i]];
+			//cout<<i<<" "<<P[i]<<":";
+			//for (int j=1;j<=num;j++) cout<<G[j]<<" ";cout<<endl;
+		}
+		/*
+		for (int i=1;i<=num;i++){
+			cout<<Num[i]<<" "<<G[i]<<endl;
+		}
+		//*/
+		//uint ss=S(n,1);cout<<"Ret:"<<ss<<endl;return ss;
 		return S(n,1);
 	}
 
