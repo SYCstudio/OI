@@ -10,7 +10,7 @@ using namespace std;
 
 const int maxN=50500;
 const int maxL=606000;
-const ull base=23;
+const ull base=233;
 
 
 class Question
