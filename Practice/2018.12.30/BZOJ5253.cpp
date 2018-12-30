@@ -12,7 +12,8 @@ using namespace std;
 const int maxN=101000*2;
 const int maxQ=303000;
 const int maxAlpha=10;
-const int maxBit=20;
+const int maxBit=18;
+const int inf=2147483647;
 
 class Question{
 public:
@@ -20,7 +21,7 @@ public:
 };
 
 int n,Q,Pos[maxN];
-ll Ans[maxN];
+ll Ans[maxQ];
 char Input[maxN];
 vector<int> T[maxN];
 vector<Question> Qs[maxN];
@@ -52,19 +53,19 @@ namespace DS{
 		int ls,rs;Data d;
 	};
 	int nodecnt,rt[maxN];
-	SegmentData S[maxN*20];
+	SegmentData S[maxN*16];
 	void Insert(int &x,int l,int r,int pos);
 	void Update(int x);
 	int Merge(int x,int y);
 	Data operator + (Data A,Data B);
 	Data QueryS(int x,int l,int r,int ql,int qr);
-	int Pre(int x,int l,int r,int right);
-	int Nxt(int x,int l,int r,int left);
+	int Max(int x,int l,int r,int ql,int qr);
+	int Min(int x,int l,int r,int ql,int qr);
 	void outp(int x,int l,int r);
 }
 
 int main(){
-	freopen("in","r",stdin);
+	//freopen("cutting14.in","r",stdin);
 	scanf("%d%d",&n,&Q);scanf("%s",Input+1);
 	for (int i=1;i<=n;i++) SAM::Insert(Input[i]-'0'),DS::Insert(DS::rt[SAM::lst],1,n,i),Pos[i]=SAM::lst;
 	for (int i=2;i<=SAM::nodecnt;i++) T[SAM::S[i].fail].push_back(i),Fa[0][i]=SAM::S[i].fail;
@@ -96,20 +97,22 @@ void dfs(int u){
 	for (int i=0,sz=Qs[u].size();i<sz;i++){
 		int l=Qs[u][i].l,r=Qs[u][i].r,len=r-l+1,id=Qs[u][i].id;
 		int mnr=DS::S[DS::rt[u]].d.mn,mxr=DS::S[DS::rt[u]].d.mx,mxl=mxr-len+1;
-		cout<<"Q:"<<u<<" "<<id<<" "<<mnr<<" "<<mxr<<endl;
+		//cout<<mnr<<" "<<mxr<<" "<<DS::Min(DS::rt[u],1,n,mnr+len-1,n)<<endl;
+		if (DS::Min(DS::rt[u],1,n,mnr+len-1,n)<=mxl) continue;
+		//cout<<"Q:"<<u<<" "<<id<<" "<<mnr<<" "<<mxr<<endl;
 		if (mnr>mxl){
 			DS::Data R=DS::QueryS(DS::rt[u],1,n,mnr,mxr);
 			//cout<<"R:"<<R.s1<<" "<<R.s2<<" "<<R.mn<<" "<<R.mx<<endl;
 			Ans[id]=R.s2-1ll*mxl*R.s1+1ll*(mnr-mxl)*(mnr-mxl-1)/2+1ll*(n-len)*(mnr-mxl);
 		}
 		else{
-			int tt=DS::Nxt(DS::rt[u],1,n,mnr+len-2);if (tt<=mxl) continue;
-			int p=DS::Nxt(DS::rt[u],1,n,mxl);p=DS::Pre(DS::rt[u],1,n,p);
-			int q=DS::Pre(DS::rt[u],1,n,mnr+len-1);int nq=DS::Nxt(DS::rt[u],1,n,q);
-			cout<<"p:"<<p<<" q:"<<q<<" nq:"<<nq<<endl;
-			DS::Data R=DS::QueryS(DS::rt[u],1,n,p,q);
-			cout<<R.s1<<" "<<R.s2<<endl;
-			Ans[id]=R.s2-1ll*mxl*R.s1+1ll*(mnr-(q-len+1))*(nq-mxl);
+			int p=DS::Min(DS::rt[u],1,n,mxl+1,n);p=DS::Max(DS::rt[u],1,n,1,p-1);
+			DS::Data R=DS::QueryS(DS::rt[u],1,n,p,mnr+len-1);
+			//cout<<p<<" "<<R.s1<<" "<<R.s2<<endl;
+			Ans[id]=R.s2-1ll*mxl*R.s1;
+			int pre=DS::Max(DS::rt[u],1,n,1,mnr+len-1),nxt=DS::Min(DS::rt[u],1,n,mnr+len-1,n);
+			if (pre==-inf||nxt==inf) continue;
+			if (pre<=nxt) Ans[id]+=(mnr-(pre-len+1))*(nxt-mxl);
 		}
 	}
 	return;
@@ -135,7 +138,7 @@ namespace DS{
 	void Insert(int &x,int l,int r,int pos){
 		if (x==0) x=++nodecnt;
 		if (l==r){
-			S[x].d=((Data){l,l,l,0});
+			S[x].d=((Data){l,l,0,0});
 			return;
 		}
 		int mid=(l+r)>>1;
@@ -156,8 +159,8 @@ namespace DS{
 	Data operator + (Data A,Data B){
 		if (A.mn==0) return B;
 		else if (B.mn==0) return A;
-		A.s1+=B.s1;A.s2+=B.s2;
-		A.s2+=B.mn-A.mx;A.mx=B.mx;
+		A.s1+=B.s1;A.s2+=B.s2;A.s1+=B.mn-A.mx;
+		A.s2+=B.mn*(B.mn-A.mx);A.mx=B.mx;
 		return A;
 	}
 	Data QueryS(int x,int l,int r,int ql,int qr){
@@ -168,15 +171,21 @@ namespace DS{
 		else if (ql>=mid+1) return QueryS(S[x].rs,mid+1,r,ql,qr);
 		else return QueryS(S[x].ls,l,mid,ql,mid)+QueryS(S[x].rs,mid+1,r,mid+1,qr);
 	}
-	int Pre(int x,int l,int r,int right){
-		if (x==0) return 0;if (l==r) return l<right?l:0;int mid=(l+r)>>1;
-		if ((right<=mid)||(S[x].rs==0)||(S[S[x].rs].d.mn>=right)) return Pre(S[x].ls,l,mid,right);
-		return Pre(S[x].rs,mid+1,r,right);
+	int Max(int x,int l,int r,int ql,int qr){
+		if (x==0) return -inf;
+		if ((l==ql)&&(r==qr)) return S[x].d.mx;
+		int mid=(l+r)>>1;
+		if (qr<=mid) return Max(S[x].ls,l,mid,ql,qr);
+		else if (ql>=mid+1) return Max(S[x].rs,mid+1,r,ql,qr);
+		else return max(Max(S[x].ls,l,mid,ql,mid),Max(S[x].rs,mid+1,r,mid+1,qr));
 	}
-	int Nxt(int x,int l,int r,int left){
-		if (x==0) return 0;if (l==r) return l>left?l:0;int mid=(l+r)>>1;
-		if ((left>=mid+1)||(S[x].ls==0)||(S[S[x].ls].d.mx<=left)) return Nxt(S[x].rs,mid+1,r,left);
-		return Nxt(S[x].ls,l,mid,left);
+	int Min(int x,int l,int r,int ql,int qr){
+		if (x==0) return inf;
+		if ((l==ql)&&(r==qr)) return S[x].d.mn;
+		int mid=(l+r)>>1;
+		if (qr<=mid) return Min(S[x].ls,l,mid,ql,qr);
+		else if (ql>=mid+1) return Min(S[x].rs,mid+1,r,ql,qr);
+		else return min(Min(S[x].ls,l,mid,ql,mid),Min(S[x].rs,mid+1,r,mid+1,qr));
 	}
 	void outp(int x,int l,int r){
 		if (x==0) return;
