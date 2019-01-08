@@ -12,7 +12,7 @@ using namespace std;
 
 const int maxN=101000*2;
 const int maxBit=20;
-const int maxSqrt=1;
+const int maxSqrt=300;
 const int inf=2147483647;
 
 class Question{
@@ -43,6 +43,7 @@ int main(){
     for (int i=0;i<=L1;i++) Id[Sorter[i]]=i;
     
     for (int i=0;i<=L1;i++) Seq[0][i]=Id[i];
+    //for (int i=0;i<=L1;i++) cout<<Id[i]<<" ";cout<<endl;
     for (int i=1;i<maxBit;i++)
 	for (int j=0;j+pow2(i)-1<=L1;j++)
 	    Seq[i][j]=min(Seq[i-1][j],Seq[i-1][j+pow2(i-1)]);
@@ -51,10 +52,14 @@ int main(){
     for (int qi=1;qi<=Q;qi++){
 	int l,r,k,x,y;scanf("%d%d%d%d%d",&l,&r,&k,&x,&y);
 	Ans[qi]=inf;
+	//cout<<"running on :"<<qi<<endl;
+	//cout<<l<<" "<<r<<" "<<x<<" "<<y<<endl;
 	if (k==1) Ans[qi]=min(Ans[qi],GetMin(l,r));
 	if (k>=maxSqrt){
-	    for (int i=x,j=y;(i<=L1)&&(j<=L2);i+=k,j+=k)
+	    for (int i=x,j=y;i<=L1;i+=k,j+=k){
+		//cout<<"("<<max(i,l)<<" "<<min(j,r)<<")"<<endl;
 		Ans[qi]=min(Ans[qi],GetMin(max(i,l),min(j,r)));
+	    }
 	}
 	else Qn[k].push_back((Question){l,r,x,y,qi});
     }
@@ -122,6 +127,7 @@ void GetSA(){
     return;
 }
 int GetLcp(int u,int v){
+    if (u==v) return L1+L2-u+1;
     u=Rk[u];v=Rk[v];if (u>v) swap(u,v);
     ++u;int lg=Lg2[v-u+1];
     return min(Height[lg][u],Height[lg][v-pow2(lg)+1]);
@@ -146,7 +152,7 @@ bool cmp(int a,int b){
 	lcp=GetLcp(a+1,L1+1+a+L2-b);
 	if (lcp<b-a) return (S[a+1+lcp]<S[L1+1+a+L2-b+lcp])^opt;
     }
-    return opt^1;
+    return (a<b)^opt;
 }
 int GetMin(int l,int r){
     if (l>r) return inf;
