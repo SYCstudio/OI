@@ -32,11 +32,12 @@ void Extend(int c,int aps);
 void Modify(int &x,int l,int r,int pos);
 int Count(int x,int l,int r,int ql,int qr);
 int Merge(int x,int y);
-void dfs(int x);
+void dfs1(int x);
+void dfs2(int x,int pos);
 void outp(int x,int l,int r);
 
 int main(){
-    freopen("in","r",stdin);freopen("out","w",stdout);
+    //freopen("in","r",stdin);freopen("out","w",stdout);
     scanf("%d",&n);scanf("%s",Input+1);
     for (int i=1;i<=n;i++) Extend(Input[i]-'a',i),Modify(rt[lst],1,n,i);
 
@@ -47,9 +48,8 @@ int main(){
     //*/
     
     for (int i=2;i<=samcnt;i++) T[Sm[i].fail].push_back(i);
-    dfs(1);int Ans=0;
-    for (int i=1;i<=samcnt;i++) cout<<F[i]<<" ";cout<<endl;
-    for (int i=1;i<=samcnt;i++) cout<<Sm[i].fail<<" ";cout<<endl;
+    dfs1(1);dfs2(1,1);int Ans=0;
+    //for (int i=1;i<=samcnt;i++) cout<<F[i]<<" ";cout<<endl;
     for (int i=2;i<=samcnt;i++) Ans=max(Ans,F[i]);
     printf("%d\n",Ans);return 0;
 }
@@ -86,27 +86,24 @@ int Count(int x,int l,int r,int ql,int qr){
 }
 int Merge(int x,int y){
     if ((!x)||(!y)) return x+y;
-    E[x].cnt=E[x].cnt+E[y].cnt;
-    E[x].ls=Merge(E[x].ls,E[y].ls);
-    E[x].rs=Merge(E[x].rs,E[y].rs);
-    return x;
+    int rt=++segcnt;
+    E[rt].cnt=E[x].cnt+E[y].cnt;
+    E[rt].ls=Merge(E[x].ls,E[y].ls);
+    E[rt].rs=Merge(E[x].rs,E[y].rs);
+    return rt;
 }
-void dfs(int x){
-    for (int i=0,sz=T[x].size();i<sz;i++){
-	dfs(T[x][i]);
-	//cout<<"Merge:"<<x<<" "<<T[x][i]<<endl;
-	rt[x]=Merge(rt[x],rt[T[x][i]]);
+void dfs1(int x){
+    for (int i=0,sz=T[x].size();i<sz;i++) dfs1(T[x][i]),rt[x]=Merge(rt[x],rt[T[x][i]]);
+    return;
+}
+void dfs2(int x,int pos){
+    if (x!=pos){
+	//cout<<x<<" "<<pos<<" "<<Count(rt[pos],1,n,Sm[x].pos-Sm[x].len+Sm[pos].len,Sm[x].pos)<<" "<<Sm[x].pos-Sm[x].len+Sm[pos].len<<" "<<Sm[x].pos<<endl;
+	if (Sm[x].len==1) F[x]=1,pos=x;
+	else if (Count(rt[pos],1,n,Sm[x].pos-Sm[x].len+Sm[pos].len,Sm[x].pos)>=2) F[x]=F[pos]+1,pos=x;
+	else F[x]=F[pos];
     }
-    cout<<"endpos:"<<x<<endl;outp(rt[x],1,n);cout<<endl;
-    cout<<Sm[Sm[x].fail].len+1<<" "<<Sm[x].len<<endl;
-    for (int i=Sm[x].pos-Sm[Sm[x].fail].len+1;i<=Sm[x].pos;i++) cout<<Input[i];cout<<endl;
-    F[x]=1;
-    for (int i=0,sz=T[x].size();i<sz;i++){
-	int v=T[x][i],l=Sm[v].pos-Sm[v].len+1,r=Sm[v].pos;
-	cout<<"Calc:"<<x<<" "<<v<<" "<<Count(rt[x],1,n,l+Sm[x].len-1,r)<<endl;
-	if (Count(rt[x],1,n,l+Sm[x].len-1,r)>=2) F[x]=max(F[x],F[v]+1);
-    }
-    cout<<F[x]<<endl;
+    for (int i=0,sz=T[x].size();i<sz;i++) dfs2(T[x][i],pos);
     return;
 }
 void outp(int x,int l,int r){
