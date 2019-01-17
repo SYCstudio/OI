@@ -2,6 +2,7 @@
 #include<cstdlib>
 #include<cstring>
 #include<algorithm>
+#include<iostream>
 using namespace std;
 
 #define ll long long
@@ -9,6 +10,7 @@ using namespace std;
 
 const int maxN=101000;
 const int maxM=maxN<<1;
+const int inf=2000000000;
 
 class Array{
 public:
@@ -74,16 +76,20 @@ void dfs_root(int u,int fa){
     if (Mx[u]<Mx[root]) root=u;return;
 }
 void solve(int u){
+    //cout<<"solve:"<<u<<endl;
     vis[u]=1;int sumsize=1;
     for (int i=Head[u];i!=-1;i=Next[i])
-	if (vis[V[i]]==0) dfs_root(V[i]),sumsize+=Sz[V[i]];
-    sum=0;A.clear();A.plus(Col[u],1);
+	if (vis[V[i]]==0) dfs_root(V[i],u),sumsize+=Sz[V[i]];
+    sum=0;A.clear();
     for (int i=Head[u];i!=-1;i=Next[i])
 	if (vis[V[i]]==0) T.clear(),T.use(Col[u]),dfs_inc(V[i],u);
+    Ans[u]+=sum+sumsize;
     for (int i=Head[u];i!=-1;i=Next[i])
 	if (vis[V[i]]==0){
 	    T.clear();T.use(Col[u]);dfs_exc(V[i],u);
+	    A.plus(Col[u],sumsize-Sz[V[i]]);
 	    dfs_calc(V[i],u,sumsize-Sz[V[i]],sum+sumsize-Sz[V[i]]);
+	    A.plus(Col[u],Sz[V[i]]-sumsize);
 	    T.clear();T.use(Col[u]);dfs_inc(V[i],u);
 	}
     for (int i=Head[u];i!=-1;i=Next[i])
@@ -94,27 +100,28 @@ void solve(int u){
     return;
 }
 void dfs_inc(int u,int fa){
-    A.plus(Col[u],1);bool flag=0;
-    if (T.check(Col[u])==0) sum+=Sz[u],T.use(Col[u]),flag=1;
+    bool flag=0;
+    if (T.check(Col[u])==0) A.plus(Col[u],Sz[u]),sum+=Sz[u],T.use(Col[u]),flag=1;
     for (int i=Head[u];i!=-1;i=Next[i])
 	if ((vis[V[i]]==0)&&(V[i]!=fa)) dfs_inc(V[i],u);
     if (flag) T.reset(Col[u]);
     return;
 }
-void dfs_exc(int u,int fa,){
-    A.plus(Col[u],-1);bool flag=0;
-    if (T.check(Col[u])==0) sum-=Sz[u],T.use(Col[u]),flag=1;
+void dfs_exc(int u,int fa){
+    bool flag=0;
+    if (T.check(Col[u])==0) A.plus(Col[u],-Sz[u]),sum-=Sz[u],T.use(Col[u]),flag=1;
     for (int i=Head[u];i!=-1;i=Next[i])
 	if ((vis[V[i]]==0)&&(V[i]!=fa)) dfs_exc(V[i],u);
     if (flag) T.reset(Col[u]);
     return;
 }
 void dfs_calc(int u,int fa,int sz,ll ans){
-    if (A.get(Col[u])==0) ans+=sz;
-    A.plus(Col[u],1);
+    int key=A.get(Col[u]);
+    ans=ans-key+sz;A.plus(Col[u],sz-key);
     Ans[u]+=ans;
+    //cout<<"dfs_calc:"<<u<<" "<<ans<<endl;
     for (int i=Head[u];i!=-1;i=Next[i])
 	if ((vis[V[i]]==0)&&(V[i]!=fa)) dfs_calc(V[i],u,sz,ans);
-    A.plus(Col[u],-1);
+    A.plus(Col[u],key-sz);
     return;
 }
