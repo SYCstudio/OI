@@ -19,6 +19,7 @@ public:
     int u,v;
 };
 int n,Q,Ans[maxN],grcnt=0,qcnt=0,ncnt=0;
+int Rgl[maxN],Rgr[maxN];
 SplayData S[maxN];
 vector<pair<int,int> > Gr[maxN];
 vector<int> Qr[maxN];
@@ -34,15 +35,19 @@ void outp();
 int main(){
     scanf("%d%d",&n,&Q);
     grcnt=Q+2;S[grcnt].k=0;
-    ncnt=1;S[ncnt].k=S[ncnt].sz=1;S[ncnt].fa=grcnt;
+    ncnt=1;S[ncnt].k=S[ncnt].sz=1;S[grcnt].fa=ncnt;
+    Rgl[1]=1;Rgr[1]=n;
     for (int i=1;i<=Q;i++){
 	int opt;scanf("%d",&opt);
 	if (opt==0){
 	    int l,r;scanf("%d%d",&l,&r);
 	    ++ncnt;S[ncnt].k=S[ncnt].sz=1;S[ncnt].fa=grcnt;
+	    Rgl[ncnt]=l;Rgr[ncnt]=r;
 	}
 	if (opt==1){
 	    int l,r,x;scanf("%d%d%d",&l,&r,&x);
+	    l=max(Rgl[x],l);r=min(Rgr[x],r);
+	    if (l>r) continue;
 	    ++grcnt;S[grcnt].k=0;S[grcnt].fa=grcnt-1;
 	    Gr[l].push_back(make_pair(grcnt,x));
 	    Gr[r+1].push_back(make_pair(-grcnt,x));
@@ -55,6 +60,7 @@ int main(){
 
     for (int i=1;i<=n;i++){
 	//cout<<"running on:"<<i<<endl;
+	sort(Gr[i].begin(),Gr[i].end());reverse(Gr[i].begin(),Gr[i].end());
 	for (int j=0,sz=Gr[i].size();j<sz;j++)
 	    if (Gr[i][j].first>0){
 		int gr=Gr[i][j].first,to=Gr[i][j].second;
@@ -65,24 +71,19 @@ int main(){
 	    }
 	    else{
 		int gr=-Gr[i][j].first;
-		//cout<<"gr:"<<gr<<endl;
 		Access(gr);Splay(gr);
 		if (S[gr].ch[0]) S[S[gr].ch[0]].fa=0;
 		S[gr].ch[0]=0;Update(gr);S[gr].fa=gr-1;
 	    }
-	//cout<<"modify over"<<endl;
 	for (int j=0,sz=Qr[i].size();j<sz;j++){
 	    int id=Qr[i][j],u=Qu[id].u,v=Qu[id].v,szu=0,szv=0,szlca=0;
 	    Access(u);Splay(u);szu=S[u].sz;
-	    //outp();
 	    int lca=Access(v);Splay(v);szv=S[v].sz;
-	    //outp();
 	    Access(lca);Splay(lca);szlca=S[lca].sz;
-	    //outp();
 	    //cout<<szu<<" "<<szv<<" "<<szlca<<endl;
+	    //cout<<u<<" "<<v<<" lca:"<<lca<<endl;
 	    Ans[id]=szu+szv-szlca*2;
 	}
-	//outp();
     }
     for (int i=1;i<=qcnt;i++) printf("%d\n",Ans[i]);
     return 0;
