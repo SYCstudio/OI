@@ -1,0 +1,380 @@
+node 1
+read 0 a
+write a 2
+node 2
+read 0 a
+write a 30
+read 1 a
+write a 3
+node 3
+read 0 a
+write a 38
+read 2 a
+write a 4
+node 4
+read 0 a
+write a 71
+read 3 a
+write a 5
+node 5
+read 0 a
+write a 60
+read 4 a
+write a 6
+node 6
+read 0 a
+write a 75
+read 5 a
+write a 7
+node 7
+read 0 a
+write a 47
+read 6 a
+write a 8
+node 8
+read 0 a
+write a 15
+read 7 a
+write a 9
+node 9
+read 0 a
+write a 52
+read 8 a
+write a 10
+node 10
+read 0 a
+write a 64
+read 9 a
+write a 64
+node 11
+read 60 a
+write a 19
+read 13 a
+write a 68
+node 13
+read 71 a
+write a 26
+read 87 a
+write a 11
+node 14
+read 56 a
+write a 84
+read 56 a
+write a 84
+node 15
+read 8 a
+write a 32
+read 47 a
+write a 52
+node 16
+read 67 a
+write a 23
+node 18
+read 44 a
+write a 61
+read 44 a
+write a 61
+node 19
+read 11 a
+write a 58
+read 26 a
+write a 41
+node 20
+read 31 a
+write a 59
+read 31 a
+write a 59
+node 21
+read 23 a
+write a 65
+node 22
+read 25 a
+write a 31
+read 41 a
+write a 31
+node 23
+read 54 a
+write a 21
+read 16 a
+write a 35
+node 24
+read 74 a
+write a 53
+read 74 a
+write a 53
+node 25
+read 47 a
+write a 22
+read 68 a
+write a 32
+node 26
+read 13 a
+write a 19
+node 29
+read 61 a
+write a 76
+read 61 a
+write a 76
+node 30
+read 2 a
+write a 38
+node 31
+read 22 a
+write a 20
+read 22 a
+write a 20
+node 32
+read 15 a
+write a 74
+read 25 a
+write a 74
+node 33
+read 45 a
+write a 81
+read 83 a
+write a 96
+node 34
+read 53 a
+write a 80
+read 53 a
+write a 80
+node 35
+read 81 a
+write a 65
+read 23 a
+write a 94
+node 38
+read 3 a
+write a 87
+read 30 a
+write a 71
+node 39
+read 48 a
+write a 45
+read 80 a
+write a 98
+node 41
+read 68 a
+write a 49
+read 19 a
+write a 22
+node 44
+read 64 a
+write a 18
+read 64 a
+write a 18
+node 45
+read 39 a
+write a 33
+read 55 a
+write a 97
+node 46
+read 63 a
+write a 100
+read 63 a
+write a 100
+node 47
+read 7 a
+write a 25
+read 75 a
+write a 15
+node 48
+read 66 a
+write a 39
+read 66 a
+write a 99
+node 49
+read 41 a
+write a 57
+read 58 a
+write a 57
+node 52
+read 9 a
+write a 89
+read 15 a
+write a 89
+node 53
+read 24 a
+write a 34
+read 24 a
+write a 34
+node 54
+read 83 a
+write a 23
+read 67 a
+write a 81
+node 55
+read 80 a
+write a 83
+read 59 a
+write a 45
+node 56
+read 79 a
+write a 14
+read 79 a
+write a 14
+node 57
+read 49 a
+write a 86
+read 49 a
+write a 73
+node 58
+read 19 a
+write a 49
+node 59
+read 20 a
+write a 73
+read 20 a
+write a 55
+node 60
+read 5 a
+write a 11
+read 71 a
+write a 75
+node 61
+read 18 a
+write a 29
+read 18 a
+write a 29
+node 63
+read 76 a
+write a 46
+read 76 a
+write a 46
+node 64
+read 10 a
+write a 44
+read 10 a
+write a 44
+node 65
+read 35 a
+write a 85
+read 21 a
+write a 93
+node 66
+read 84 a
+write a 48
+read 84 a
+write a 48
+node 67
+read 73 a
+write a 16
+read 86 a
+write a 54
+node 68
+read 75 a
+write a 41
+read 11 a
+write a 25
+node 71
+read 4 a
+write a 13
+read 38 a
+write a 60
+node 73
+read 59 a
+write a 67
+read 57 a
+write a 83
+node 74
+read 32 a
+write a 24
+read 32 a
+write a 24
+node 75
+read 6 a
+write a 68
+read 60 a
+write a 47
+node 76
+read 29 a
+write a 63
+read 29 a
+write a 63
+node 79
+read 89 a
+write a 56
+read 89 a
+write a 56
+node 80
+read 34 a
+write a 55
+read 34 a
+write a 39
+node 81
+read 33 a
+write a 35
+read 54 a
+write a 95
+node 83
+read 55 a
+write a 54
+read 73 a
+write a 33
+node 84
+read 14 a
+write a 66
+read 14 a
+write a 66
+node 85
+read 65 a
+write a 92
+node 86
+read 57 a
+write a 67
+node 87
+read 38 a
+write a 13
+node 89
+read 52 a
+write a 79
+read 52 a
+write a 79
+node 91
+read 92 a
+write a 0
+node 92
+read 93 a
+write a 91
+read 85 a
+write a 0
+node 93
+read 94 a
+write a 92
+read 65 a
+write a 0
+node 94
+read 95 a
+write a 93
+read 35 a
+write a 0
+node 95
+read 96 a
+write a 94
+read 81 a
+write a 0
+node 96
+read 97 a
+write a 95
+read 33 a
+write a 0
+node 97
+read 98 a
+write a 96
+read 45 a
+write a 0
+node 98
+read 99 a
+write a 97
+read 39 a
+write a 0
+node 99
+read 100 a
+write a 98
+read 48 a
+write a 0
+node 100
+read 46 a
+write a 99
+read 46 a
+write a 0
