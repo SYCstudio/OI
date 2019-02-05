@@ -47,8 +47,8 @@ int main(){
     //freopen("7.in","r",stdin);freopen("out","w",stdout);
     scanf("%d%d%d",&n,&P,&Q);mem(Head,-1);
     for (int i=1;i<n;i++){
-	int u,v;scanf("%d%d",&u,&v);
-	Add_Edge(u,v);Add_Edge(v,u);
+		int u,v;scanf("%d%d",&u,&v);
+		Add_Edge(u,v);Add_Edge(v,u);
     }
     dfs(1,0);
     for (int i=1;i<maxB;i++) for (int j=1;j<=n;j++) Fa[i][j]=Fa[i-1][Fa[i-1][j]];
@@ -66,7 +66,7 @@ void Add_Edge(int u,int v){
 void dfs(int u,int fa){
     dfn[u]=++dfncnt;Fa[0][u]=fa;dep[u]=dep[fa]+1;
     for (int i=Head[u];i!=-1;i=Next[i])
-	if (V[i]!=fa) dfs(V[i],u);
+		if (V[i]!=fa) dfs(V[i],u);
     lst[u]=dfncnt;return;
 }
 bool cmpx(Mayuri A,Mayuri B){
@@ -88,32 +88,32 @@ void Divide(int ml,int mr,int ql,int qr){
     //for (int i=ml;i<=mid;i++) cout<<"("<<Mdf[i].x<<","<<Mdf[i].y<<") ";cout<<endl;
     //for (int i=ql;i<=qr;i++) cout<<"("<<Myr[i].x<<" "<<Myr[i].y<<") ";cout<<endl;
     for (int i=ml;i<=mid;i++){
-	int u=Mdf[i].x,v=Mdf[i].y;
-	if (dep[u]>dep[v]) swap(u,v);
+		int u=Mdf[i].x,v=Mdf[i].y;
+		if (dep[u]>dep[v]) swap(u,v);
 
-	//int lstscnt=scnt;
+		//int lstscnt=scnt;
 	
-	if (dfn[v]>=dfn[u]&&lst[v]<=lst[u]){
-	    int vv=v;for (int j=maxB-1;j>=0;j--) if (Fa[j][vv]&&dep[Fa[j][vv]]>dep[u]) vv=Fa[j][vv];
-	    Sorter[++scnt]=((Iriya){dfn[v],1,dfn[vv]-1,1});
-	    Sorter[++scnt]=((Iriya){lst[v]+1,1,dfn[vv]-1,-1});
-	    Sorter[++scnt]=((Iriya){1,dfn[v],lst[v],1});
-	    Sorter[++scnt]=((Iriya){dfn[vv],dfn[v],lst[v],-1});
-	    if (lst[vv]!=n){
-		Sorter[++scnt]=((Iriya){dfn[v],lst[vv]+1,n,1});
-		Sorter[++scnt]=((Iriya){lst[v]+1,lst[vv]+1,n,-1});
-		Sorter[++scnt]=((Iriya){lst[vv]+1,dfn[v],lst[v],1});
-	    }
-	}
-	else{
-	    Sorter[++scnt]=((Iriya){dfn[u],dfn[v],lst[v],1});
-	    Sorter[++scnt]=((Iriya){lst[u]+1,dfn[v],lst[v],-1});
-	    Sorter[++scnt]=((Iriya){dfn[v],dfn[u],lst[u],1});
-	    Sorter[++scnt]=((Iriya){lst[v]+1,dfn[u],lst[u],-1});
-	}
+		if (dfn[v]>=dfn[u]&&lst[v]<=lst[u]){
+			int vv=v;for (int j=maxB-1;j>=0;j--) if (Fa[j][vv]&&dep[Fa[j][vv]]>dep[u]) vv=Fa[j][vv];
+			Sorter[++scnt]=((Iriya){dfn[v],1,dfn[vv]-1,1});
+			Sorter[++scnt]=((Iriya){lst[v]+1,1,dfn[vv]-1,-1});
+			Sorter[++scnt]=((Iriya){1,dfn[v],lst[v],1});
+			Sorter[++scnt]=((Iriya){dfn[vv],dfn[v],lst[v],-1});
+			if (lst[vv]!=n){
+				Sorter[++scnt]=((Iriya){dfn[v],lst[vv]+1,n,1});
+				Sorter[++scnt]=((Iriya){lst[v]+1,lst[vv]+1,n,-1});
+				Sorter[++scnt]=((Iriya){lst[vv]+1,dfn[v],lst[v],1});
+			}
+		}
+		else{
+			Sorter[++scnt]=((Iriya){dfn[u],dfn[v],lst[v],1});
+			Sorter[++scnt]=((Iriya){lst[u]+1,dfn[v],lst[v],-1});
+			Sorter[++scnt]=((Iriya){dfn[v],dfn[u],lst[u],1});
+			Sorter[++scnt]=((Iriya){lst[v]+1,dfn[u],lst[u],-1});
+		}
 
-	//cout<<"("<<u<<" "<<v<<")"<<endl;
-	//for (int j=lstscnt+1;j<=scnt;j++) cout<<"("<<Sorter[j].x<<" ["<<Sorter[j].yl<<" "<<Sorter[j].yr<<" "<<Sorter[j].opt<<"])"<<endl;//cout<<endl;
+		//cout<<"("<<u<<" "<<v<<")"<<endl;
+		//for (int j=lstscnt+1;j<=scnt;j++) cout<<"("<<Sorter[j].x<<" ["<<Sorter[j].yl<<" "<<Sorter[j].yr<<" "<<Sorter[j].opt<<"])"<<endl;//cout<<endl;
     }
     
     sort(&Sorter[1],&Sorter[scnt+1],cmpi);
@@ -121,19 +121,19 @@ void Divide(int ml,int mr,int ql,int qr){
     int top1=0,top2=0,lstx=0;
     Clear(1);
     for (int i=1,j=ql;;){
-	while (j<=qr&&(i>scnt||Myr[j].x<Sorter[i].x)){
-	    int r=Query(1,1,n,Myr[j].y);
-	    //cout<<"Calc:"<<j<<" "<<r<<"|"<<Myr[j].x<<" "<<Myr[j].y<<" "<<Myr[j].c<<" "<<Myr[j].k<<"|"<<lstx<<endl;
-	    if (r>=Myr[j].k) Ans[Myr[j].c]=Mdf[mid].c,Bp1[++top1]=Myr[j];
-	    else Myr[j].k-=r,Bp2[++top2]=Myr[j];
-	    ++j;
-	}
-	if (i>scnt) break;
-	lstx=Sorter[i].x;
-	while (Sorter[i].x==lstx&&i<=scnt){
-	    Modify(1,1,n,Sorter[i].yl,Sorter[i].yr,Sorter[i].opt);
-	    ++i;
-	}
+		while (j<=qr&&(i>scnt||Myr[j].x<Sorter[i].x)){
+			int r=Query(1,1,n,Myr[j].y);
+			//cout<<"Calc:"<<j<<" "<<r<<"|"<<Myr[j].x<<" "<<Myr[j].y<<" "<<Myr[j].c<<" "<<Myr[j].k<<"|"<<lstx<<endl;
+			if (r>=Myr[j].k) Ans[Myr[j].c]=Mdf[mid].c,Bp1[++top1]=Myr[j];
+			else Myr[j].k-=r,Bp2[++top2]=Myr[j];
+			++j;
+		}
+		if (i>scnt) break;
+		lstx=Sorter[i].x;
+		while (Sorter[i].x==lstx&&i<=scnt){
+			Modify(1,1,n,Sorter[i].yl,Sorter[i].yr,Sorter[i].opt);
+			++i;
+		}
     }
     int p=ql-1,dvt;
     for (int i=1;i<=top1;i++) Myr[++p]=Bp1[i];
@@ -150,14 +150,14 @@ void Clear(int x){
 }
 void PushDown(int x){
     if (S[x].clr){
-	Clear(ls);Clear(rs);
-	S[x].clr=0;
+		Clear(ls);Clear(rs);
+		S[x].clr=0;
     }
     return;
 }
 void Modify(int x,int l,int r,int ql,int qr,int k){
     if ((l==ql)&&(r==qr)){
-	S[x].lz+=k;return;
+		S[x].lz+=k;return;
     }
     PushDown(x);
     int mid=(l+r)>>1;

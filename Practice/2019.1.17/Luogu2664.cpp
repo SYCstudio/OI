@@ -16,23 +16,23 @@ class Array{
 public:
     int tim,Tim[maxN],Key[maxN];
     void clear(){
-	++tim;return;
+		++tim;return;
     }
     void reset(int p){
-	Tim[p]=0;return;
+		Tim[p]=0;return;
     }
     void use(int p){
-	Tim[p]=tim;return;
+		Tim[p]=tim;return;
     }
     bool check(int p){
-	return Tim[p]==tim;
+		return Tim[p]==tim;
     }
     void plus(int p,int k){
-	if (Tim[p]!=tim) Tim[p]=tim,Key[p]=0;
-	Key[p]+=k;return;
+		if (Tim[p]!=tim) Tim[p]=tim,Key[p]=0;
+		Key[p]+=k;return;
     }
     int get(int p){
-	return (Tim[p]==tim)?Key[p]:0;
+		return (Tim[p]==tim)?Key[p]:0;
     }
 };
 
@@ -54,8 +54,8 @@ int main(){
     scanf("%d",&n);mem(Head,-1);
     for (int i=1;i<=n;i++) scanf("%d",&Col[i]);
     for (int i=1;i<n;i++){
-	int u,v;scanf("%d%d",&u,&v);
-	Add_Edge(u,v);Add_Edge(v,u);
+		int u,v;scanf("%d%d",&u,&v);
+		Add_Edge(u,v);Add_Edge(v,u);
     }
     Mx[root=0]=inf;nowsize=n;
     dfs_root(1,1);solve(root);
@@ -68,10 +68,10 @@ void Add_Edge(int u,int v){
 void dfs_root(int u,int fa){
     Sz[u]=1;Mx[u]=0;
     for (int i=Head[u];i!=-1;i=Next[i])
-	if ((vis[V[i]]==0)&&(V[i]!=fa)){
-	    dfs_root(V[i],u);Sz[u]+=Sz[V[i]];
-	    Mx[u]=max(Mx[u],Sz[V[i]]);
-	}
+		if ((vis[V[i]]==0)&&(V[i]!=fa)){
+			dfs_root(V[i],u);Sz[u]+=Sz[V[i]];
+			Mx[u]=max(Mx[u],Sz[V[i]]);
+		}
     Mx[u]=max(Mx[u],nowsize-Sz[u]);
     if (Mx[u]<Mx[root]) root=u;return;
 }
@@ -79,31 +79,31 @@ void solve(int u){
     //cout<<"solve:"<<u<<endl;
     vis[u]=1;int sumsize=1;
     for (int i=Head[u];i!=-1;i=Next[i])
-	if (vis[V[i]]==0) dfs_root(V[i],u),sumsize+=Sz[V[i]];
+		if (vis[V[i]]==0) dfs_root(V[i],u),sumsize+=Sz[V[i]];
     sum=0;A.clear();
     for (int i=Head[u];i!=-1;i=Next[i])
-	if (vis[V[i]]==0) T.clear(),T.use(Col[u]),dfs_inc(V[i],u);
+		if (vis[V[i]]==0) T.clear(),T.use(Col[u]),dfs_inc(V[i],u);
     Ans[u]+=sum+sumsize;
     for (int i=Head[u];i!=-1;i=Next[i])
-	if (vis[V[i]]==0){
-	    T.clear();T.use(Col[u]);dfs_exc(V[i],u);
-	    A.plus(Col[u],sumsize-Sz[V[i]]);
-	    dfs_calc(V[i],u,sumsize-Sz[V[i]],sum+sumsize-Sz[V[i]]);
-	    A.plus(Col[u],Sz[V[i]]-sumsize);
-	    T.clear();T.use(Col[u]);dfs_inc(V[i],u);
-	}
+		if (vis[V[i]]==0){
+			T.clear();T.use(Col[u]);dfs_exc(V[i],u);
+			A.plus(Col[u],sumsize-Sz[V[i]]);
+			dfs_calc(V[i],u,sumsize-Sz[V[i]],sum+sumsize-Sz[V[i]]);
+			A.plus(Col[u],Sz[V[i]]-sumsize);
+			T.clear();T.use(Col[u]);dfs_inc(V[i],u);
+		}
     for (int i=Head[u];i!=-1;i=Next[i])
-	if (vis[V[i]]==0){
-	    root=0;nowsize=Sz[V[i]];
-	    dfs_root(V[i],V[i]);solve(root);
-	}
+		if (vis[V[i]]==0){
+			root=0;nowsize=Sz[V[i]];
+			dfs_root(V[i],V[i]);solve(root);
+		}
     return;
 }
 void dfs_inc(int u,int fa){
     bool flag=0;
     if (T.check(Col[u])==0) A.plus(Col[u],Sz[u]),sum+=Sz[u],T.use(Col[u]),flag=1;
     for (int i=Head[u];i!=-1;i=Next[i])
-	if ((vis[V[i]]==0)&&(V[i]!=fa)) dfs_inc(V[i],u);
+		if ((vis[V[i]]==0)&&(V[i]!=fa)) dfs_inc(V[i],u);
     if (flag) T.reset(Col[u]);
     return;
 }
@@ -111,7 +111,7 @@ void dfs_exc(int u,int fa){
     bool flag=0;
     if (T.check(Col[u])==0) A.plus(Col[u],-Sz[u]),sum-=Sz[u],T.use(Col[u]),flag=1;
     for (int i=Head[u];i!=-1;i=Next[i])
-	if ((vis[V[i]]==0)&&(V[i]!=fa)) dfs_exc(V[i],u);
+		if ((vis[V[i]]==0)&&(V[i]!=fa)) dfs_exc(V[i],u);
     if (flag) T.reset(Col[u]);
     return;
 }
@@ -121,7 +121,7 @@ void dfs_calc(int u,int fa,int sz,ll ans){
     Ans[u]+=ans;
     //cout<<"dfs_calc:"<<u<<" "<<ans<<endl;
     for (int i=Head[u];i!=-1;i=Next[i])
-	if ((vis[V[i]]==0)&&(V[i]!=fa)) dfs_calc(V[i],u,sz,ans);
+		if ((vis[V[i]]==0)&&(V[i]!=fa)) dfs_calc(V[i],u,sz,ans);
     A.plus(Col[u],key-sz);
     return;
 }
