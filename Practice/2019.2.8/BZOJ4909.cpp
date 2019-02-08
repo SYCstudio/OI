@@ -7,6 +7,7 @@
 using namespace std;
 
 #define mem(Arr,x) memset(Arr,x,sizeof(Arr))
+#define sqr(x) ((x)*(x))
 
 int X,Y;
 
@@ -15,13 +16,22 @@ namespace brute{
     double F[2][maxN];
     int main();
 }
+namespace Simpson{
+    const double Pi=acos(-1);
+    const double eps=1e-15;
+    double sigma,mu;
+    int main();
+    double Calc(double p);
+    double Inte(double l,double r);
+    double Simpson(double l,double r);
+}
 
 int main(){
-    //freopen("in","r",stdin);freopen("out","w",stdout);
     int Case;scanf("%d",&Case);
     while (Case--){
         scanf("%d%d",&X,&Y);
         if (Y<=1600) brute::main();
+        else Simpson::main();
     }
     return 0;
 }
@@ -52,5 +62,28 @@ namespace brute{
             printf("%.12lf\n",F[now][B]-((A>=1)?F[now][A-1]:0));
         }
         return 0;
+    }
+}
+namespace Simpson{
+    int main(){
+        mu=(double)(X-1)/2.0*Y;sigma=sqrt((double)(sqr(X)-1)/12.0*Y);
+        for (int ti=1;ti<=10;ti++){
+            int A,B;scanf("%d%d",&A,&B);
+            double l=max((double)A,mu-sigma*3),r=min((double)B,mu+sigma*3);
+            if (l<=r) printf("%.12lf\n",Simpson(l,r));
+            else printf("%.12lf\n",0.0);
+        }
+        return 0;
+    }
+    double Calc(double x){
+        return exp(-sqr(x-mu)/2/sqr(sigma))/sigma/sqrt(Pi*2.0);
+    }
+    double Inte(double l,double r){
+        return (r-l)*(Calc(l)+Calc(r)+Calc((l+r)/2)*4)/6;
+    }
+    double Simpson(double l,double r){
+        double mid=(l+r)/2,k=Inte(l,r),kl=Inte(l,mid),kr=Inte(mid,r);
+        if (fabs(kl+kr-k)<eps) return kl+kr;
+        return Simpson(l,mid)+Simpson(mid,r);
     }
 }
