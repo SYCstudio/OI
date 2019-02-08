@@ -55,8 +55,8 @@ int main(){
 
     //check(5.0);return 0;
 
-    double l=0,r=1e8,Ans=-1;
-    while (l+eps<r){
+    double l=0,r=W+W,Ans=-1;
+    while (l+(1e-4)<r){
         double mid=(l+r)/2;
         if (check(mid)) Ans=mid,r=mid-eps;
         else l=mid+eps;
