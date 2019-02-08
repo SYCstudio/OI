@@ -32,7 +32,7 @@ class VData{
     int v,a,b;
 };
 
-const int maxN=100100*2;
+const int maxN=100100*4;
 const int maxM=maxN<<1;
 const int inf=1000000000;
 
@@ -58,7 +58,7 @@ void Convex(Point *P,int &T);
 double Intersection(Point A,Point B);
 
 int main(){
-    freopen("in","r",stdin);freopen("out","w",stdout);
+    //freopen("in","r",stdin);freopen("out","w",stdout);
     scanf("%d%d",&n,&m);mem(Head,-1);
     for (int i=1;i<n;i++){
         int u,v,a,b;scanf("%d%d%d%d",&u,&v,&a,&b);
@@ -85,7 +85,7 @@ int main(){
     }
     for (int i=0,j=1;i<m;i++){
         while (j<top&&Out[j+1].calc(i)>=Out[j].calc(i)) ++j;
-        printf("%lld ",Out[j].calc(i));
+        printf("%I64d ",Out[j].calc(i));
     }
     printf("\n");return 0;
 }
