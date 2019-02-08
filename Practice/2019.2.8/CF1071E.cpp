@@ -30,7 +30,6 @@ ostream & operator << (ostream &os,Point A);
 bool cmpx(Point A,Point B);
 bool cmpc(Point A,Point B);
 double Cross(Point A,Point B);
-double Dot(Point A,Point B);
 void Convex(Point *P,int &n);
 bool Inconvex(Point *C,int n,Point p);
 bool check(double dt);
@@ -53,7 +52,7 @@ int main(){
     }
     //for (int i=1;i<=n;i++) cout<<P[i][0]<<" "<<P[i][1]<<endl;
 
-    //check(5.0);return 0;
+    //check(3.0);return 0;
 
     double l=0,r=W+W,Ans=-1;
     while (l+(1e-4)<r){
@@ -87,9 +86,6 @@ bool cmpc(Point A,Point B){
 double Cross(Point A,Point B){
     return A.x*B.y-A.y*B.x;
 }
-double Dot(Point A,Point B){
-    return A.x*B.x+A.y*B.y;
-}
 void Convex(Point *P,int &n){
     static Point Bp[maxN];
     sort(&P[1],&P[n+1],cmpx);
@@ -105,10 +101,9 @@ void Convex(Point *P,int &n){
     n=top;return;
 }
 bool Inconvex(Point *C,int n,Point p){
-    if (n<=2){
-        for (int i=1;i<=n;i++) if (fabs(C[i].x-p.x)<eps&&fabs(C[i].y-p.y)<eps) return 1;
-        return 0;
-    }
+    //cout<<"Inconvex:"<<n<<" "<<p<<" | "<<C[1]<<" "<<C[2]<<endl;
+    if (n==1) return ((C[1]-p).len()<eps);
+    if (n==2) return fabs((C[2]-C[1]).len()-(C[2]-p).len()-(C[1]-p).len())<eps;
     for (int i=1;i<=n;i++) if (Cross(C[i+1]-C[i],p-C[i])<0) return 0;
     return 1;
 }
@@ -117,43 +112,52 @@ bool check(double dt){
     Point L1=st,L2=st;
     Point F[4]={(Point){dt,dt},(Point){dt,-dt},(Point){-dt,dt},(Point){-dt,-dt}};
     for (int i=1;i<=n;i++){
-        Point C[10],N[2];int cnt=0,ncnt=0;
+        //cout<<"running at "<<i<<" "<<L1<<" "<<L2<<endl;
+        Point C[10],N[10];int cnt=0,ncnt=0;
         for (int f=0;f<4;f++) C[++cnt]=L1+(double)(Ti[i]-Ti[i-1])*F[f],C[++cnt]=L2+(double)(Ti[i]-Ti[i-1])*F[f];
         //for (int j=1;j<=cnt;j++) cout<<C[j]<<" ";cout<<endl;
         Convex(C,cnt);
         //for (int j=1;j<=cnt;j++) cout<<C[j]<<" ";cout<<endl;
         //cout<<"Compare with:"<<P[i][0]<<" "<<P[i][1]<<endl;
         C[cnt+1]=C[1];
-        for (int j=1;j<=cnt;j++) if (Intersection(C[j],C[j+1],P[i][0],P[i][1])) N[ncnt++]=GetIntersection(C[j],C[j+1],P[i][0],P[i][1]);
+        for (int j=1;j<=cnt;j++)
+            if (Intersection(C[j],C[j+1],P[i][0],P[i][1])){
+                Point R=GetIntersection(C[j],C[j+1],P[i][0],P[i][1]);
+                if (ncnt==0||(N[ncnt-1]-R).len()>eps) N[ncnt++]=R;
+            }
         //cout<<"ncnt:"<<ncnt<<endl;
         if (ncnt==0){
             if (Inconvex(C,cnt,P[i][0])&&Inconvex(C,cnt,P[i][1])) N[ncnt++]=P[i][0],N[ncnt++]=P[i][1];
+            else if (Inconvex(C,cnt,P[i][0])) N[0]=N[1]=P[i][0],ncnt=2;
+            else if (Inconvex(C,cnt,P[i][1])) N[0]=N[1]=P[i][1],ncnt=2;
             else return 0;
         }
         else if (ncnt==1){
             if (Inconvex(C,cnt,P[i][0])) N[ncnt++]=P[i][0];
-            else N[ncnt++]=P[i][1];
+            else if (Inconvex(C,cnt,P[i][1])) N[ncnt++]=P[i][1];
+            else N[1]=N[0],++ncnt;
         }
         L1=N[0];L2=N[1];
-        //cout<<"after "<<i<<":"<<L1<<" "<<L2<<endl;
     }
+    //cout<<"RET!"<<endl;
     return 1;
 }
 bool Intersection(Point A1,Point A2,Point B1,Point B2){
     //cout<<"Intersection:"<<A1<<" "<<A2<<" "<<B1<<" "<<B2<<":"<<Cross(B2-B1,A1-B1)<<" "<<Cross(B2-B1,A2-B1)<<" "<<Cross(A2-A1,B1-A1)<<" "<<Cross(A2-A1,B2-A1)<<endl;
     if ((A1-A2).len()<eps&&(B1-B2).len()<eps) return (fabs(A1.x-B1.x)<eps)&&(fabs(A1.y-B1.y)<eps);
     if ((A1-A2).len()<eps) swap(A1,B1),swap(A2,B2);
-    if ((B1-B2).len()<eps){
-        double dt=Dot(B1-A1,A2-A1),d=(A2-A1).len();
-        if (dt>=0&&dt*d<=d) return 1;
-        return 0;
-    }
+    if ((B1-B2).len()<eps) return fabs((A1-A2).len()-(A1-B1).len()-(A2-B1).len())<eps;
     return (Cross(B2-B1,A1-B1)*Cross(B2-B1,A2-B1)<=0)&&(Cross(A2-A1,B1-A1)*Cross(A2-A1,B2-A1)<=0);
 }
 Point GetIntersection(Point A1,Point A2,Point B1,Point B2){
     if ((B1-B2).len()<eps&&(A1-A2).len()<eps) return A1;
+    if ((A1-A2).len()<eps) return A1;
     if ((B1-B2).len()<eps) return B1;
-    //cout<<"GetIntersection:"<<A1<<" "<<A2<<" "<<B1<<" "<<B2<<endl;
+    if ((A1-B1).len()<eps) return A1;
+    if ((A1-B2).len()<eps) return A1;
+    if ((A2-B1).len()<eps) return A2;
+    if ((A2-B2).len()<eps) return A2;
+    //cout<<"GetIntersection:"<<A1<<" "<<A2<<" "<<B1<<" "<<B2<<"|"<<Cross(B2-B1,A1-B1)<<" "<<Cross(A2-A1,B2-B1)<<endl;
     double t=fabs(Cross(B2-B1,A1-B1)/Cross(A2-A1,B2-B1));
     return A1+t*(A2-A1);
 }
