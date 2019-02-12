@@ -11,7 +11,7 @@ const int maxM=maxN<<1;
 const int inf=1000000000;
 int n,Ans=0;
 int edgecnt=-1,Head[maxN],Next[maxM],V[maxM];
-int rt,rtsize,truert,vis[maxN],Sz[maxN],Mx[maxN];
+int rt,rtsize,truert,vis[maxN],Sz[maxN],Mx[maxN],Gsz[maxN],Gmx[maxN];
 
 void Add_Edge(int u,int v);
 void dfs_size(int u,int fa,int size);
@@ -43,29 +43,35 @@ void dfs_size(int u,int fa,int size){
     if (Mx[u]<rtsize) rtsize=Mx[u],rt=u;
     return;
 }
+void dfs_get(int u,int fa){
+    Gsz[u]=1;
+    for (int i=Head[u];i!=-1;i=Next[i]) if (V[i]!=fa) dfs_get(V[i],u),Gsz[u]+=Gsz[V[i]];
+    return;
+}
 void dfs_calc(int u,int fa,int size){
-    Sz[u]=1;Mx[u]=0;
+    Gsz[u]=1;Mx[u]=0;
     for (int i=Head[u];i!=-1;i=Next[i])
         if (V[i]!=fa){
-            dfs_calc(V[i],u,size);Sz[u]+=Sz[V[i]];
-            Mx[u]=max(Mx[u],Sz[V[i]]);
+            dfs_calc(V[i],u,size);Gsz[u]+=Gsz[V[i]];
+            Mx[u]=max(Mx[u],Gsz[V[i]]);
         }
-    Mx[u]=max(Mx[u],size-Sz[u]);
+    Mx[u]=max(Mx[u],size-Gsz[u]);
     if (Mx[u]<rtsize) rtsize=Mx[u],rt=u;
 }
 void Divide(int start,int size){
     rtsize=inf;dfs_size(start,start,size);
     vis[rt]=1;truert=rt;
-    cout<<"Divide:"<<rt<<endl;
+    //cerr<<"Divide:"<<rt<<" "<<size<<endl;
     int tans=inf,tu;
     for (int i=Head[truert];i!=-1;i=Next[i]){
-        rtsize=inf;int vsize=Sz[V[i]]>Sz[truert]?size-Sz[truert]:Sz[V[i]];
-        dfs_calc(V[i],truert,vsize);
-        cout<<V[i]<<":rsz="<<rtsize<<" rt="<<rt<<" Mx[rt]="<<Mx[rt]<<" vsz="<<vsize<<" A:"<<Mx[rt]+size-vsize<<endl;
-        if (Mx[rt]+size-vsize<tans) tans=Mx[rt]+size-vsize,tu=V[i];
+        dfs_get(V[i],truert);
+        rtsize=inf;
+        dfs_calc(V[i],truert,Gsz[V[i]]);
+        if (Mx[rt]+n-Gsz[V[i]]<tans) tans=Mx[rt]+n-Gsz[V[i]],tu=V[i];
     }
     Ans=max(Ans,tans);
     if (tans==inf||vis[tu]) return;
-    Divide(tu,min(Sz[tu],size-Sz[truert]));
+    int tsize=Sz[tu]>Sz[truert]?size-Sz[truert]:Sz[tu];
+    Divide(tu,tsize);
     return;
 }
