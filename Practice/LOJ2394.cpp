@@ -2,13 +2,9 @@
 #include<cstdlib>
 #include<cstring>
 #include<algorithm>
+#include "Broken_device_lib.h"
 using namespace std;
 
-const int maxN=101000;
+void Anna(int n,long long X,int K,int P[]){
 
-int n,K,T;
-int X[maxN];
-
-int main(){
-    scanf("%d",&n);
 }
