@@ -49,4 +49,5 @@ double Cross(Point A,Point B){
     return A.x*B.y-A.y*B.x;
 }
 bool check(Point D1,Point D2){
+    Point dp=D2-D1;
 }
