@@ -2,6 +2,7 @@
 #include<cstring>
 #include<algorithm>
 #include<iostream>
+#include<vector>
 using namespace std;
 
 #define mem(Arr,x) memset(Arr,x,sizeof(Arr))
@@ -60,7 +61,9 @@ int main(){
         if (opt==1){
             int l,r;scanf("%d%d",&l,&r);
             Data R=Query(1,1,m,l,r);
-            //cout<<R.u<<" "<<R.v<<" "<<R.a<<" "<<R.b<<" "<<R.opt<<endl;
+            //cout<<"GET:"<<R.u<<" "<<R.v<<" "<<R.a<<" "<<R.b<<" "<<R.opt<<endl;
+            //int fu=R.a;while (fu) cout<<fu<<" ",fu=Fa[0][fu];cout<<endl;
+            //fu=R.b;while (fu) cout<<fu<<" ",fu=Fa[0][fu];cout<<endl;
             if (R.opt==1) puts("-1");
             else{
                 int now=Dep[R.a]>=Dep[R.b]?R.a:R.b,skip=Dst(R.a,R.b)/2,f=Dst(R.a,R.b)&1;
@@ -71,11 +74,13 @@ int main(){
                     if (In(R.u,R.v,now)&&In(R.u,R.v,fa)) printf("%d\n",min(now,fa));
                     else if (In(R.u,R.v,now)) printf("%d\n",now);
                     else if (In(R.u,R.v,fa)) printf("%d\n",fa);
-                    else printf("%d\n",min(R.u,R.v));
+                    else if (max(Dst(R.u,R.a),Dst(R.u,R.b))<=max(Dst(R.v,R.a),Dst(R.v,R.b))) printf("%d\n",R.u);
+                    else printf("%d\n",R.v);
                 }
                 else{
                     if (In(R.u,R.v,now)) printf("%d\n",now);
-                    else printf("%d\n",min(R.u,R.v));
+                    else if (max(Dst(R.u,R.a),Dst(R.u,R.b))<=max(Dst(R.v,R.a),Dst(R.v,R.b))) printf("%d\n",R.u);
+                    else printf("%d\n",R.v);
                 }
             }
         }
@@ -118,21 +123,24 @@ int GetMax(int p,int a,int b,int c,int d){
     return r;
 }
 Data operator + (Data A,Data B){
-    if (lft[A.u]<lft[B.u]) swap(A,B);
-    cout<<"Merge:"<<A.u<<" "<<A.v<<" "<<A.a<<" "<<A.b<<"|"<<B.u<<" "<<B.v<<" "<<B.a<<" "<<B.b<<endl;
     Data R;if (A.opt||B.opt){R.opt=1;return R;}
-    if (In(A.u,A.v,B.u)&&In(A.u,A.v,B.v)) R.u=B.u,R.v=B.v;
-    else{
-        int u1=LCA(A.u,B.u),u2=LCA(A.u,B.v);
-        R.u=Dep[u1]>=Dep[u2]?u1:u2;
-        u1=LCA(A.v,B.u);u2=LCA(A.v,B.v);
-        R.v=Dep[u1]>=Dep[u2]?u1:u2;
+    //cout<<"Merge:"<<A.u<<" "<<A.v<<" "<<A.a<<" "<<A.b<<"|"<<B.u<<" "<<B.v<<" "<<B.a<<" "<<B.b<<endl;
+    if (!In(A.u,A.v,LCA(B.u,B.v))&&!In(B.u,B.v,LCA(A.u,A.v))) {R.opt=1;return R;};
+    R.u=Dep[LCA(A.u,B.u)]>=Dep[LCA(A.u,B.v)]?LCA(A.u,B.u):LCA(A.u,B.v);
+    R.v=Dep[LCA(A.v,B.u)]>=Dep[LCA(A.v,B.v)]?LCA(A.v,B.u):LCA(A.v,B.v);
+    //cout<<R.u<<" "<<R.v<<endl;
+    if (!In(A.u,A.v,R.u)||!In(A.u,A.v,R.v)||!In(B.u,B.v,R.u)||!In(B.u,B.v,R.v)){
+        R.u=((Dep[LCA(B.u,A.u)]>=Dep[LCA(B.u,A.v)])?(LCA(B.u,A.u)):(LCA(B.u,A.v)));
+        R.v=((Dep[LCA(B.v,A.u)]>=Dep[LCA(B.v,A.v)])?(LCA(B.v,A.u)):(LCA(B.v,A.v)));
     }
-    if (lft[R.u]>lft[R.v]) swap(R.u,R.v);
-    cout<<R.u<<" "<<R.v<<endl;
-    if (!In(A.u,A.v,R.u)||!In(A.u,A.v,R.v)||!In(B.u,B.v,R.u)||!In(B.u,B.v,R.v)){R.opt=1;return R;}
-    R.a=GetMax(R.u,A.a,A.b,B.a,B.b);
-    R.b=GetMax(R.v,A.a,A.b,B.a,B.b);
+    //cout<<R.u<<" "<<R.v<<endl;
+    vector<int> P,Q;
+    if (Dst(A.a,R.u)<=Dst(A.a,R.v)&&P.size()<2) P.push_back(A.a);else Q.push_back(A.a);
+    if (Dst(A.b,R.u)<=Dst(A.b,R.v)&&P.size()<2) P.push_back(A.b);else Q.push_back(A.b);
+    if (Dst(B.a,R.u)<=Dst(B.a,R.v)&&P.size()<2) P.push_back(B.a);else Q.push_back(B.a);
+    if (Dst(B.b,R.u)<=Dst(B.b,R.v)&&P.size()<2) P.push_back(B.b);else Q.push_back(B.b);
+    R.a=Dst(R.u,P[0])>=Dst(R.u,P[1])?P[0]:P[1];
+    R.b=Dst(R.v,Q[0])>=Dst(R.v,Q[1])?Q[0]:Q[1];
     return R;
 }
 void Build(int x,int l,int r){
