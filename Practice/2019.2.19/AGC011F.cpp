@@ -8,10 +8,10 @@ typedef long long ll;
 #define Dct(x) (lower_bound(&Num[1],&Num[num+1],x)-Num)
 #define ls (x<<1)
 #define rs (ls|1)
-const int maxN=101000;
+const int maxN=101000*5;
 
 int n,K;
-ll Sm[maxN],num,Num[maxN],F[maxN],Lft[maxN];
+ll Sm[maxN],num,Num[maxN],F[maxN],Lft[maxN],Rht[maxN];
 int C[maxN<<2];
 
 void Cover(int x,int c);
@@ -20,31 +20,33 @@ void Modify(int x,int l,int r,int ql,int qr,int c);
 int Query(int x,int l,int r,int p);
 ll Calc(ll pos);
 int main(){
-    freopen("in","r",stdin);
+    //freopen("in","r",stdin);
+    ll sum=0;
     scanf("%d%d",&n,&K);
     for (int i=1;i<=n;i++){
         int key,opt;scanf("%d%d",&key,&opt);
-        if (opt==2) key=0;
-        if (key*2>K){printf("-1\n");exit(0);}
-        Sm[i]=(Sm[i-1]+key)%K;
+        if (opt==1&&key*2>K){printf("-1\n");exit(0);}
+        Sm[i]=(Sm[i-1]+key)%K;sum+=key;
+        if (opt==2) Lft[i]=0,Rht[i]=K-1;
+        else Lft[i]=(K-Sm[i-1]*2%K)%K,Rht[i]=(K-Sm[i]*2%K)%K;
+        Num[++num]=Lft[i];Num[++num]=Rht[i];
     }
-    for (int i=1;i<=n;i++) Sm[i]=Num[i]=(K-2*Sm[i]%K)%K;num=n;
-    Num[++num]=0;sort(&Num[1],&Num[num+1]);num=unique(&Num[1],&Num[num+1])-Num-1;
-    for (int i=1;i<=num;i++) cout<<Num[i]<<" ";cout<<endl;
+    Num[++num]=0;Num[++num]=K-1;sort(&Num[1],&Num[num+1]);num=unique(&Num[1],&Num[num+1])-Num-1;
+    //for (int i=1;i<=num;i++) cout<<Num[i]<<" ";cout<<endl;
     for (int i=n;i>=1;i--){
-        int l=Dct(Sm[i-1]),r=Dct(Sm[i]);Lft[i]=Sm[i-1];
-        F[i]=Calc(Sm[i-1]);
-        cout<<"("<<l<<" "<<r<<")"<<endl;
+        int l=Dct(Lft[i]),r=Dct(Rht[i]);
+        F[i]=Calc(Lft[i]);
+        //cout<<"("<<l<<" "<<r<<")"<<endl;
         if (l<=r){
-            Modify(1,1,num,1,l,i);
-            Modify(1,1,num,r,num,i);
+            if (l>1) Modify(1,1,num,1,l-1,i);
+            if (r<num) Modify(1,1,num,r+1,num,i);
         }
-        else Modify(1,1,num,r,l,i);
-        cout<<F[i]<<" "<<Lft[i]<<endl;for (int j=1;j<=num;j++) cout<<Query(1,1,num,j)<<" ";cout<<endl;
+        else if (r+1<=l-1) Modify(1,1,num,r+1,l-1,i);
+        //cout<<F[i]<<" "<<Lft[i]<<endl;for (int j=1;j<=num;j++) cout<<Query(1,1,num,j)<<" ";cout<<endl;
     }
     ll Ans=F[1];
     for (int i=1;i<=num;i++) Ans=min(Ans,Calc(Num[i]));
-    printf("%lld\n",Ans);return 0;
+    printf("%lld\n",Ans+sum*2);return 0;
 }
 void PushDown(int x){
     if (C[x]){
@@ -72,5 +74,5 @@ int Query(int x,int l,int r,int p){
 ll Calc(ll pos){
     int p=Dct(pos),id=Query(1,1,num,p);
     if (id==0) return 0;
-    return F[id]+(Lft[id]>=pos?Lft[id]-pos:pos+Num[num]-Lft[id]);
+    return F[id]+(Lft[id]-pos+K)%K;
 }
