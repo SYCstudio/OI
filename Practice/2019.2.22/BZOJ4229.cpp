@@ -6,12 +6,13 @@
 #include<iostream>
 using namespace std;
 
+#define RG register
 #define mem(Arr,x) memset(Arr,x,sizeof(Arr))
 class Option{
     public:
     int opt,u,v;
 };
-const int maxN=101000<<1;
+const int maxN=101000*2;
 const int maxM=maxN<<1;
 
 int n,m,Q,nodecnt=0;
@@ -24,10 +25,9 @@ int Ans[maxN];
 
 int find(int *f,int x);
 void Add_Edge(int u,int fa);
-void dfs(int u,int fa);
-void Add(int u,int v);
+void dfs(RG int u,RG int fa);
+void Add(RG int u,RG int v);
 int main(){
-    freopen("in","r",stdin);freopen("out","w",stdout);
     mem(Head,-1);
     scanf("%d%d%d",&n,&m,&Q);nodecnt=n;
     for (int i=1;i<=m;i++){
@@ -47,8 +47,6 @@ int main(){
                 else Es[++top]=make_pair(i,(*it).first);
             }
     for (int i=1;i<=n;i++) if (Dep[i]==0) dfs(i,i);
-    for (int i=1;i<=n;i++) cout<<Fa[i]<<" ";cout<<endl;
-    for (int i=1;i<=n;i++) cout<<Dep[i]<<" ";cout<<endl;
     for (int i=1;i<=top;i++) Add(Es[i].first,Es[i].second);
     for (int i=Q;i>=1;i--)
         if (O[i].opt==1) Add(O[i].u,O[i].v);
@@ -71,22 +69,33 @@ void dfs(int u,int fa){
     for (int i=Head[u];i!=-1;i=Next[i]) if (V[i]!=fa) dfs(V[i],u),Sz[u]+=Sz[V[i]];
     return;
 }
-void Add(int u,int v){
+void Add(RG int u,RG int v){
+    //cerr<<u<<" "<<v<<endl;
+    RG int fu,fv,id,scnt,i,j,k,top,lst;
+    static int Seq[maxN],Bp[maxN];
     u=find(f2,u);v=find(f2,v);
-    int fu=find(f1,u),fv=find(f1,v);
-    cout<<"Add:"<<u<<" "<<v<<" "<<fu<<" "<<fv<<endl;
+    fu=find(f1,u);fv=find(f1,v);
+    if (u==v) return;
     if (fu==fv){
-        int id=++nodecnt;f2[id]=id;
-        cout<<"id:"<<id<<endl;
+        id=++nodecnt;f2[id]=id;f1[id]=fu;
+        scnt=0;
         while (u!=v){
             if (Dep[u]<Dep[v]) swap(u,v);
-            cout<<"Skip at:"<<u<<" "<<v<<endl;
-            Del[u]=1;f2[u]=id;
-            for (int i=Head[u];i!=-1;i=Next[i]) if (!Del[V[i]]) Add_Edge(id,V[i]),Fa[V[i]]=id;
-            u=Fa[u];
+            Seq[++scnt]=u;Del[u]=1;u=Fa[u];
         }
-        Del[u]=1;for (int i=Head[u];i!=-1;i=Next[i]) if (!Del[V[i]]) Add_Edge(id,V[i]),Fa[V[i]]=id;
-        Fa[id]=Fa[u];Dep[id]=Dep[Fa[u]]+1;Sz[id]=Sz[u];
+        Seq[++scnt]=u;int fa=Fa[u];Del[u]=1;
+        for (i=1;i<=scnt;++i){
+            f2[Seq[i]]=id;top=0;
+            for (j=Head[Seq[i]];~j;j=Next[j])
+                if (!Del[V[j]]){
+                    for (k=Head[V[j]];~k;k=Next[k]) if (V[k]==Seq[i]) V[k]=id;
+                    Bp[++top]=j;
+                    if (V[j]!=fa) Fa[V[j]]=id;
+                }
+            for (j=1;j<=top;++j) Next[Bp[j]]=Head[id],Head[id]=Bp[j];
+            Head[Seq[i]]=-1;
+        }
+        Fa[id]=fa;Dep[id]=Dep[Fa[u]]+1;Sz[id]=Sz[u];
     }
     else{
         if (Sz[fu]<Sz[fv]) swap(fu,fv),swap(u,v);
