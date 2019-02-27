@@ -38,7 +38,6 @@ void Modify(int x,int l,int r,int p,int u,int v);
 Data Query(int x,int l,int r,int ql,int qr);
 
 int main(){
-    freopen("in","r",stdin);freopen("out","w",stdout);
     mem(Head,-1);for (int i=2;i<maxN;i++) Log[i]=Log[i>>1]+1;
     scanf("%d%d",&n,&m);
     for (int i=1;i<n;i++){
