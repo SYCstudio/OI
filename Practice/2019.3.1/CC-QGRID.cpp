@@ -28,7 +28,6 @@ class BIT{
         ll ret=0;while (p) ret+=B[p],p-=(p)&(-p);return ret;
     }
     ll Query(int l,int r){
-        if (l==0&&r==0) return INF;
         return Sum(r)-Sum(l-1);
     }
 };
@@ -63,7 +62,7 @@ int n,m,Q,Id[maxM][maxN],top=0,From[maxM][maxN];
 ll Down[maxM][maxN],Right[maxM][maxN],D[maxM][maxN],ST[20][3];
 bool vis[maxM][maxN];
 SData S[20][3];
-priority_queue<pair<int,pair<int,int > > > H;
+priority_queue<pair<ll,pair<int,int > > > H;
 
 void Divide(int d,int l,int r);
 void Modify(int d,int l,int r,int ql,int qr,int u,int v);
@@ -90,10 +89,11 @@ int main(){
         int opt;scanf("%d",&opt);
         if (opt==1){
             int x1,y1,x2,y2;ll c;scanf("%d%d%d%d%lld",&x1,&y1,&x2,&y2,&c);
+            if (y1>y2) swap(y1,y2),swap(x1,x2);
             int u=Id[x1][y1],v=Id[x2][y2];top=0;
             Modify(0,1,n,y1,y2,u,v);ll mn=INF;bool flag=1;
             for (int i=0;i<=top;i++) for (int j=0;j<m;j++) mn=min(mn,ST[i][j]);
-            cout<<"m:"<<mn<<endl;
+            //cout<<"m:"<<mn<<endl;
             for (int i=0;i<=top&&flag;i++)
                 for (int j=0;j<m&&flag;j++)
                     if (ST[i][j]==mn){
@@ -114,7 +114,7 @@ void Divide(int d,int l,int r){
     //cerr<<"Divide:"<<d<<" "<<l<<" "<<r<<endl;
     for (int p=1;p<=m;p++){
         for (int i=1;i<=m;i++) for (int j=l;j<=r;j++) D[i][j]=INF,vis[i][j]=0;while (!H.empty()) H.pop();
-        D[p][mid]=0;H.push(mp(0,mp(p,mid)));From[p][mid]=-1;
+        D[p][mid]=0;H.push(mp(0ll,mp(p,mid)));From[p][mid]=-1;
         while (!H.empty()){
             int x=H.top().sd.ft,y=H.top().sd.sd;H.pop();
             if (vis[x][y]) continue;vis[x][y]=1;
@@ -138,7 +138,11 @@ void Divide(int d,int l,int r){
 }
 void Modify(int d,int l,int r,int ql,int qr,int u,int v){
     int mid=(l+r)>>1;top=d;
-    for (int i=0;i<m;i++) ST[d][i]=S[d][i].D[u]+S[d][i].D[v];
+    //cout<<"M at:"<<d<<" "<<l<<" "<<r<<" "<<ql<<" "<<qr<<" "<<u<<" "<<v<<endl;
+    for (int i=0;i<m;i++){
+        ST[d][i]=S[d][i].D[u]+S[d][i].D[v];
+        //cout<<ST[d][i]<<" ";
+    }//cout<<endl;
     if (l==r) return;
     if (qr<=mid) Modify(d+1,l,mid,ql,qr,u,v);
     else if (ql>=mid+1) Modify(d+1,mid+1,r,ql,qr,u,v);
