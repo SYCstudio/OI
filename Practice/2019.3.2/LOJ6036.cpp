@@ -42,7 +42,6 @@ int main(){
     for (int i=1;i<=n&&flag;i++) if (Id[2*i]==Id[2*i-1]) flag=0;
     //cout<<"A"<<endl;
     //for (int i=1;i<=n;i++) cout<<Id[2*i-1]<<" "<<Id[2*i]<<endl;
-    cerr<<nodecnt<<" "<<edgecnt<<endl;
     flag?puts("YES"):puts("NO");return 0;
 }
 bool icmp(string A,string B){
