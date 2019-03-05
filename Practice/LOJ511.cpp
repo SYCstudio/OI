@@ -23,6 +23,7 @@ int edgecnt=-1,Hd[maxN],Nt[maxM],V[maxM];
 int Sz[maxN],Hs[maxN],Top[maxN],Fa[maxN],Dep[maxN],dfncnt,dfn[maxN],rht[maxN],idfn[maxN];
 
 ll Mul(ll a,ll b);
+ll Plus(ll a,ll b);
 void Add_Edge(int u,int v);
 void dfs1(int u,int fa);
 void dfs2(int u,int top);
@@ -57,6 +58,10 @@ ll Mul(ll a,ll b){
     if (__builtin_clzll(a)+__builtin_clzll(b)<66||a*b>=K) return K;
     return a*b;
 }
+ll Plus(ll a,ll b){
+    if (a>=K||b>=K) return K;
+    return min(a+b,K);
+}
 void Add_Edge(int u,int v){
     Nt[++edgecnt]=Hd[u];Hd[u]=edgecnt;V[edgecnt]=v;
     return;
@@ -80,4 +85,9 @@ void dfs2(int u,int top){
         DS::rht[u]=DS::scnt;
         DS::Build(DS::rt[u],DS::lft[u],DS::rht[u]);
     }
+    else rht[Top[u]]=dfncnt;
+    if (Top[u]==top){
+        DC::Build(DC::rt[u],dfn[u],rht[u]);
+    }
+    return;
 }
