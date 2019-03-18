@@ -3,6 +3,7 @@
 #include<cstring>
 #include<algorithm>
 #include<vector>
+#include<iostream>
 using namespace std;
 
 const int maxN=101000;
@@ -30,19 +31,26 @@ Data operator * (Data A,int x);
 int dfs_predp(int u);
 pair<int,int> dfs_dp(int u);
 int main(){
+    freopen("in","r",stdin);freopen("out","w",stdout);
     scanf("%d%d",&n,&m);memset(Hd,-1,sizeof(Hd));
     for (int i=1;i<=m;i++){
         int u,v;scanf("%d%d",&u,&v);
         Add_Edge(u,v);Add_Edge(v,u);
     }
     dfs_init(1,0);
+    cout<<"E"<<endl;
+    for (int i=0;i<decnt;i++) cout<<E[i].first<<" "<<E[i].second<<endl;
     for (int i=0;i<decnt;i++) Mark[E[i].first]=Mark[E[i].second]=1;
     dfs_predp(1);
+    cout<<"F"<<endl;
+    for (int i=1;i<=n;i++) cout<<F[i][0]<<" "<<F[i][1]<<endl;
+    for (int i=1;i<=n;i++) cout<<G[i][0].a<<" "<<G[i][0].b<<" "<<G[i][1].a<<" "<<G[i][1].b<<endl;
     for (int i=0;i<decnt;i++) Mark[E[i].first]=Mark[E[i].second]=0;
     int Ans=0;
     for (int S=0,N=1<<decnt;S<N;S++){
         int cnt=0;for (int j=0;j<decnt;j++) if ((S>>j)&1) Mark[E[j].first]=Mark[E[j].second]=1,++cnt;
         pair<int,int> r=dfs_dp(1);r.first=(r.first+r.second)%Mod;
+        cout<<"running at:"<<S<<" "<<r.first-r.second<<" "<<r.second<<endl;
         if (cnt&1) Ans=(Ans-r.first+Mod)%Mod;
         else Ans=(Ans+r.first)%Mod;
     }
@@ -71,25 +79,23 @@ int dfs_predp(int u){
     for (int i=0,sz=T[u].size();i<sz;i++){
         int v=T[u][i],vv=dfs_predp(v);
         if (vv) Vtr[u].push_back(make_pair(v,vv));
-        else F[u][0]=1ll*F[u][0]*(F[v][0]+F[v][1])%Mod,F[u][1]=1ll*F[u][1]*F[v][1]%Mod;
+        else F[u][0]=1ll*F[u][0]*(F[v][0]+F[v][1])%Mod,F[u][1]=1ll*F[u][1]*F[v][0]%Mod;
     }
     if (Vtr[u].size()>=2||u==1||Mark[u]){
-        G[u][0]=((Data){1,0});G[u][1]=((Data){1,0});
+        G[u][0]=((Data){1,1});G[u][1]=((Data){1,1});
         return u;
     }
     else if (Vtr[u].size()==1){
         int v=Vtr[u][0].first;
         G[u][0]=(G[v][0]+G[v][1])*F[u][0];
-        G[u][1]=G[v][1]*F[u][1];
+        G[u][1]=G[v][1]*F[u][0];
         return v;
     }
     else return 0;
 }
 pair<int,int> dfs_dp(int u){
-    int r0=0,r1=0;
-    if (Vtr[u].size()==0) r0=F[u][0],r1=F[u][1];
-    else{
-        r0=r1=1;
+    int r0=F[u][0],r1=F[u][1];
+    if (Vtr[u].size()){
         for (int i=0,sz=Vtr[u].size();i<sz;i++){
             pair<int,int> p=dfs_dp(Vtr[u][i].second);
             int v=Vtr[u][i].first;
