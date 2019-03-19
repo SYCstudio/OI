@@ -30,29 +30,24 @@ Data operator + (Data A,Data B);
 Data operator * (Data A,int x);
 int dfs_predp(int u);
 pair<int,int> dfs_dp(int u);
+pair<int,int> dfs_brute(int u);
 int main(){
-    freopen("in","r",stdin);freopen("out","w",stdout);
     scanf("%d%d",&n,&m);memset(Hd,-1,sizeof(Hd));
     for (int i=1;i<=m;i++){
         int u,v;scanf("%d%d",&u,&v);
         Add_Edge(u,v);Add_Edge(v,u);
     }
     dfs_init(1,0);
-    cout<<"E"<<endl;
-    for (int i=0;i<decnt;i++) cout<<E[i].first<<" "<<E[i].second<<endl;
     for (int i=0;i<decnt;i++) Mark[E[i].first]=Mark[E[i].second]=1;
     dfs_predp(1);
-    cout<<"F"<<endl;
-    for (int i=1;i<=n;i++) cout<<F[i][0]<<" "<<F[i][1]<<endl;
-    for (int i=1;i<=n;i++) cout<<G[i][0].a<<" "<<G[i][0].b<<" "<<G[i][1].a<<" "<<G[i][1].b<<endl;
     for (int i=0;i<decnt;i++) Mark[E[i].first]=Mark[E[i].second]=0;
     int Ans=0;
     for (int S=0,N=1<<decnt;S<N;S++){
         int cnt=0;for (int j=0;j<decnt;j++) if ((S>>j)&1) Mark[E[j].first]=Mark[E[j].second]=1,++cnt;
         pair<int,int> r=dfs_dp(1);r.first=(r.first+r.second)%Mod;
-        cout<<"running at:"<<S<<" "<<r.first-r.second<<" "<<r.second<<endl;
         if (cnt&1) Ans=(Ans-r.first+Mod)%Mod;
         else Ans=(Ans+r.first)%Mod;
+        for (int j=0;j<decnt;j++) if ((S>>j)&1) Mark[E[j].first]=Mark[E[j].second]=0;
     }
     printf("%d\n",Ans);return 0;
 }
@@ -82,14 +77,19 @@ int dfs_predp(int u){
         else F[u][0]=1ll*F[u][0]*(F[v][0]+F[v][1])%Mod,F[u][1]=1ll*F[u][1]*F[v][0]%Mod;
     }
     if (Vtr[u].size()>=2||u==1||Mark[u]){
-        G[u][0]=((Data){1,1});G[u][1]=((Data){1,1});
+        for (int i=0,sz=Vtr[u].size();i<sz;i++){
+            Data d=G[Vtr[u][i].first][0];
+            G[Vtr[u][i].first][0]=G[Vtr[u][i].first][0]+G[Vtr[u][i].first][1];
+            G[Vtr[u][i].first][1]=d;
+        }
+        G[u][0]=((Data){1,0});G[u][1]=((Data){0,1});
         return u;
     }
     else if (Vtr[u].size()==1){
         int v=Vtr[u][0].first;
         G[u][0]=(G[v][0]+G[v][1])*F[u][0];
-        G[u][1]=G[v][1]*F[u][0];
-        return v;
+        G[u][1]=G[v][0]*F[u][1];
+        return Vtr[u][0].second;
     }
     else return 0;
 }
@@ -102,6 +102,16 @@ pair<int,int> dfs_dp(int u){
             r0=1ll*r0*(1ll*p.first*G[v][0].a%Mod+1ll*p.second*G[v][0].b%Mod)%Mod;
             r1=1ll*r1*(1ll*p.first*G[v][1].a%Mod+1ll*p.second*G[v][1].b%Mod)%Mod;
         }
+    }
+    if (Mark[u]) r0=0;
+    return make_pair(r0,r1);
+}
+pair<int,int> dfs_brute(int u){
+    int r0=1,r1=1;
+    for (int i=0,sz=T[u].size();i<sz;i++){
+        pair<int,int> p=dfs_brute(T[u][i]);
+        r0=1ll*r0*(p.first+p.second)%Mod;
+        r1=1ll*r1*p.first%Mod;
     }
     if (Mark[u]) r0=0;
     return make_pair(r0,r1);
