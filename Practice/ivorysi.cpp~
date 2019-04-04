@@ -1,0 +1,128 @@
+#include <bits/stdc++.h>
+#define fi first
+#define se second
+#define pii pair<int,int>
+#define mp make_pair
+#define pb push_back
+#define enter putchar('\n')
+#define space putchar(' ')
+#define MAXN 20005
+#define eps 1e-8
+//#define ivorysi
+using namespace std;
+typedef long long int64;
+typedef double db;
+template<class T>
+void read(T &res) {
+    res = 0;char c = getchar();T f = 1;
+    while(c < '0' || c > '9') {
+    if(c == '-') f = -1;
+    c = getchar();
+    }
+    while(c >= '0' && c <= '9') {
+    res = res * 10 + c - '0';
+    c = getchar();
+    }
+    res *= f;
+}
+template<class T>
+void out(T x) {
+    if(x < 0) {x = -x;putchar('-');}
+    if(x >= 10) {
+    out(x / 10);
+    }
+    putchar('0' + x % 10);
+}
+const int MOD = 1000000007;
+int C[1505],N,M,P,K;
+pii dp[1505];
+int g[1505],f[1505],d[1505],inv[1505],ad[1505];
+int inc(int a,int b) {
+    return a + b >= MOD ? a + b - MOD : a + b;
+}
+int mul(int a,int b) {
+    return 1LL * a * b % MOD;
+}
+int fpow(int x,int c) {
+    int res = 1,t = x;
+    while(c) {
+    if(c & 1) res = mul(res,t);
+    t = mul(t,t);
+    c >>= 1;
+    }
+    return res;
+}
+const pii operator + (const pii &a,const pii &b) {
+    return mp(inc(a.fi,b.fi),inc(a.se,b.se));
+}
+const pii operator * (const pii &a,const int &d) {
+    return mp(mul(a.fi,d),mul(a.se,d));
+}
+void update(pii &a,pii b) {
+    a = a + b;
+}
+void Solve() {
+    read(N);read(P);read(M);read(K);
+    if(K == 0) {puts("-1");return;}
+    if(M == 0) {
+    if(K == 1) {
+        puts("-1");
+    }
+    else {
+        int cnt = 0;
+        if(P == N) {P = max(0,P - K);++cnt;}
+        if(P) cnt += (P - 1) / (K - 1) + 1;
+        out(cnt);enter;
+    }
+    return;
+    }
+    
+    int T = min(N,K);
+    int InvM = fpow(M,MOD - 2),InvM1 = fpow(M + 1,MOD - 2); 
+    C[0] = 1;C[1] = K;
+    g[0] = 1;f[0] = fpow(mul(InvM1,M),K);int t = mul(InvM,M + 1);
+    g[1] = InvM1,f[1] = mul(f[0],t);
+    for(int i = 2 ; i <= T ; ++i) {
+    C[i] = mul(C[i - 1],mul(inv[i],inc(K,MOD - i + 1)));
+    g[i] = mul(g[i - 1],g[1]);
+    f[i] = mul(f[i - 1],t);
+    }
+    for(int i = 0 ; i <= T ; ++i) {
+    t = mul(C[i],mul(g[i],f[i]));
+    d[i] = mul(t,mul(M,InvM1));
+    ad[i] = mul(t,InvM1);
+    }
+    for(int i = T + 1 ; i <= N ; ++i) d[i] = ad[i] = 0;
+    dp[1] = mp(1,0);
+    for(int i = 2 ; i <= N ; ++i) {
+    dp[i] = mp(0,MOD - 1);
+    update(dp[i],dp[i - 1] * inc(1,MOD - inc(d[0],ad[1])));
+    for(int j = 1 ; j < i - 1; ++j) {
+        update(dp[i],dp[j] * (MOD - inc(d[i - 1 - j],ad[i - j])));
+    }
+    dp[i] = dp[i] * fpow(ad[0],MOD - 2);
+    }
+    pii another = mp(0,1);
+    for(int i = 1 ; i < N ; ++i) {
+    if(N - i <= T) {
+        t = mul(C[N - i],mul(g[N - i],f[N - i]));
+        update(another,dp[i] * t);
+    }
+    }
+    another = another * fpow(inc(1,MOD - f[0]),MOD - 2);
+    if(another.fi == dp[N].fi) {puts("-1");return;}
+    int x = mul(inc(dp[N].se,MOD - another.se),fpow(inc(another.fi,MOD - dp[N].fi),MOD - 2));
+    out(inc(mul(dp[P].fi,x),dp[P].se));enter;
+}
+int main() {
+#ifdef ivorysi
+    freopen("f1.in","r",stdin);
+#endif
+    inv[1] = 1;
+    for(int i = 2 ; i <= 1500 ; ++i) {
+    inv[i] = mul(inv[MOD % i],MOD - MOD / i);
+    }
+    int T;read(T);
+    while(T--) Solve();
+    return 0;
+}
