@@ -23,9 +23,9 @@ int main(){
     int Case;scanf("%d",&Case);
     while (Case--){
         scanf("%d%d",&n,&m);
-        idcnt=n;dfncnt=mkcnt=0;
+        idcnt=n;dfncnt=mkcnt=top=0;memset(Col,0,sizeof(Col));
         memset(dfn,0,sizeof(dfn));memset(Mark,0,sizeof(Mark));memset(Mksum,0,sizeof(Mksum));
-        memset(Fob,0,sizeof(Fob));memset(Sn,0,sizeof(Sn));memset(Mksz,0,sizeof(Mksz));
+        memset(Fob,0,sizeof(Fob));memset(Sn,0,sizeof(Sn));memset(Mksz,0,sizeof(Mksz));memset(Fob,0,sizeof(Fob));
         for (int i=1;i<=m;i++){
             int u,v;scanf("%d%d",&u,&v);
             T[u].push_back(v);T[v].push_back(u);
@@ -42,18 +42,11 @@ int main(){
         Outp(oddcnt,mkcnt,n,m);
 
         for (int i=1;i<=n;i++)
-            if (Mksz[Mark[i]]==1) Outp(oddcnt,mkcnt-1,n-1,m-T[i].size());
-            else if (Sn[i]==1){
-                if (Col[i]=='1'){
-                    if (Mksum[Mark[i]]&1) Outp(oddcnt-1,mkcnt,n-1,m-T[i].size());
-                    else Outp(oddcnt+1,mkcnt,n-1,m-T[i].size());
-                }
-                else Outp(oddcnt,mkcnt,n-1,m-T[i].size());
-            }
+            if (Mksz[Mark[i]]==1) Outp(oddcnt-(Col[i]=='1'),mkcnt-1,n-1,m-T[i].size());
             else{
-                int oo=oddcnt,mm=mkcnt;
+                int oo=oddcnt;
                 if (Mksum[Mark[i]]&1) --oo;
-                if (oo||Fob[i]) printf("0 ");else Outp(oo,mm-1+Sn[i],n-1,m-T[i].size());
+                if (oo||Fob[i]) printf("0 ");else Outp(oo,mkcnt-1+Sn[i],n-1,m-T[i].size());
             }
         printf("\n");
 
@@ -68,9 +61,9 @@ void tarjan(int u,int fa){
         if (!dfn[v]){
             tarjan(v,u);low[u]=min(low[u],low[v]);
             if (low[v]>=dfn[u]){
-                ++idcnt;int v;
-                do v=St[top--],Vt[idcnt].push_back(v),Vt[v].push_back(idcnt);while (v!=u);
-                St[++top]=u;
+                ++idcnt;int sv;
+                do sv=St[top--],Vt[idcnt].push_back(sv),Vt[sv].push_back(idcnt);while (sv!=v);
+                Vt[u].push_back(idcnt);Vt[idcnt].push_back(u);
             }
         }
         else low[u]=min(low[u],dfn[v]);
