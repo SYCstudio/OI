@@ -34,7 +34,6 @@ int main(){
 	    if (rx>=L[mid]) p2=mid,l=mid+1;
 	    else r=mid-1;
 	}
-	//cout<<p1<<" "<<p2<<" "<<lx<<" "<<rx<<endl;
 	if (p1>p2){
 	    puts("0");continue;
 	}
@@ -53,6 +52,5 @@ int main(){
 ld GetX(ld x1,ld y1,ld x2,ld y2,ld y){
     if (fabs(x1-x2)<eps) return x1;
     ld k=(y1-y2)/(x1-x2),b=y1-k*x1;
-    //cout<<"Get:"<<x1<<" "<<y1<<" "<<x2<<" "<<y2<<" "<<y<<" "<<(y-b)/k<<" "<<k<<"x+"<<b<<endl;
     return (y-b)/k;
 }
