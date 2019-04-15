@@ -32,8 +32,6 @@ int main(){
     for (int i=1;i<=n;i++) scanf("%lf%lf",&M1[i].x,&M1[i].y);
     for (int i=1;i<=m;i++) scanf("%lf%lf",&M2[i].x,&M2[i].y);
     Convex(M1,n);Convex(M2,m);
-    //for (int i=1;i<=n;i++) cout<<M1[i]<<" ";cout<<endl;
-    //for (int i=1;i<=m;i++) cout<<M2[i]<<" ";cout<<endl;
 
     if (check()) puts("YES");else puts("NO");
     return 0;
@@ -75,7 +73,6 @@ bool check(){
 	    Point p1=M1[i]-M1[i-1],p2=M1[i]-M1[i+1];
 	    Mh[++cnt1]=p1.angle()-p2.angle();
 	    if (Mh[cnt1]<0) Mh[cnt1]+=Pi+Pi;
-	    //Mh[++cnt1]=Cross(p2,p1)/p1.len()/p2.len();
 	}
 	Mh[++cnt1]=(M1[i+1]-M1[i]).len();
     }
@@ -84,12 +81,9 @@ bool check(){
 	    Point p1=M2[i]-M2[i-1],p2=M2[i]-M2[i+1];
 	    Ms[++cnt2]=p1.angle()-p2.angle();
 	    if (Ms[cnt2]<0) Ms[cnt2]+=Pi+Pi;
-	    //Ms[++cnt2]=(Cross(p2,p1))/p1.len()/p2.len();
 	}
 	Ms[++cnt2]=(M2[i+1]-M2[i]).len();
     }
-    //for (int i=1;i<=cnt1;i++) cout<<Mh[i]<<" ";cout<<endl;
-    //for (int i=1;i<=cnt2;i++) cout<<Ms[i]<<" ";cout<<endl;
     Nxt[1]=Nxt[0]=0;
     for (int i=2,j=0;i<=cnt2;i++){
 	while (j&&fabs(Ms[j+1]-Ms[i])>eps) j=Nxt[j];

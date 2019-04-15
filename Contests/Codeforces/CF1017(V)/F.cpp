@@ -23,19 +23,11 @@ int main(){
 	if (r<=srt) Id[r]=num;else Id[l+maxN]=num;
 	r=n/r;
     }
-    //for (uint i=1;i<=num;i++) cout<<Num[i]<<" ";cout<<endl;
     
     for (uint i=1;i<=pcnt&&1ll*Pri[i]*Pri[i]<=Num[1];i++)
 	for (uint j=1;j<=num&&1ll*Pri[i]*Pri[i]<=Num[j];j++)
 	    for (uint k=0;k<4;k++)
 		F[k][j]=F[k][j]-(F[k][GetId(Num[j]/Pri[i])]-Sm[k][i-1])*QPow(Pri[i],k);
-    /*
-    for (uint k=0;k<4;k++){
-	for (uint i=1;i<=num;i++) cout<<F[k][i]<<" ";cout<<endl;
-    }
-    //*/
-    //pair<int,uint> rr=S(n,1);
-    //cout<<rr.first<<" "<<rr.second<<endl;
     printf("%u\n",S(n,1).second);return 0;
 }
 void Init(){
@@ -79,7 +71,6 @@ pair<uint,uint> S(uint n,uint p){
     uint r1=0,id=GetId(n),r2=0;
     r1=F[0][id]-Sm[0][p-1];
     r2=A*(F[3][id]-Sm[3][p-1])+B*(F[2][id]-Sm[2][p-1])+C*(F[1][id]-Sm[1][p-1])+D*r1;
-    //cout<<"b:"<<n<<" "<<p<<":"<<r1<<" "<<r2<<endl;
     for (uint i=p;i<=pcnt&&1ll*Pri[i]*Pri[i]<=n;i++){
 	uint bf=A*QPow(Pri[i],3)+B*QPow(Pri[i],2)+C*Pri[i]+D,f=bf;
 	for (uint x=Pri[i];1ll*x*Pri[i]<=n;x*=Pri[i],f=f+bf){
@@ -89,6 +80,5 @@ pair<uint,uint> S(uint n,uint p){
 	    r1++;r2=r2+f+bf;
 	}
     }
-    //cout<<n<<" "<<p<<" "<<Pri[p]<<":"<<r1<<" "<<r2<<endl;
     return make_pair(r1,r2);
 }
