@@ -41,7 +41,6 @@ int BinaryRight(int x,int key);
 double C(StackData A);
 int brute(int l,int r);
 int main(){
-    //freopen("in","r",stdin);freopen("out","w",stdout);
     scanf("%d%d",&n,&m);for (int i=1;i<=n;i++) scanf("%d",&Seq[i]);
     for (int i=1;i<=n;i++) Sml[i]=Sml[i-1]+Seq[i],Sm[i]=(Sm[i-1]+Seq[i])%Mod,Sm2[i]=(Sm2[i-1]+1ll*Seq[i]*Seq[i]%Mod)%Mod;
     for (int i=1;i<=m;i++){
@@ -62,37 +61,15 @@ int main(){
     }
     for (int i=1;i<=n;i++){
 	--revtop;while (Undo[i].size()) Srev[++revtop]=Undo[i].back(),Undo[i].pop_back();
-
-	if (Qm[i].size()){
-	    //cout<<"At:"<<i<<endl;
-	//for (int j=1;j<=top;j++) cout<<"["<<Sn[j].l<<" "<<Sn[j].r<<"]("<<C(Sn[j])<<") ";cout<<"|";
-	//for (int j=revtop;j>=1;j--) cout<<"["<<Srev[j].l<<" "<<Srev[j].r<<"]("<<C(Srev[j])<<") ";cout<<endl;
 	
 	for (int j=0,sz=Qm[i].size();j<sz;j++){
 	    int id=Qm[i][j],key=Om[id],R=BinaryRight(i,key-Seq[i]),L=BinaryLeft(i,key-Seq[i],R);
-	    //cout<<id<<":["<<L<<" "<<R<<"]"<<" "<<Pre[L-1]<<" "<<Suf[R+1]<<endl;
 	    Ans[id]=(Pre[L-1]+Suf[R+1])%Mod;
 	    int ae=((Sm[R]-Sm[L-1]+key)%Mod-Seq[i])%Mod;ae=(ae+Mod)%Mod;int sm=ae;ae=1ll*ae*Inv(R-L+1)%Mod;
 	    int sm2=(Sm2[R]-Sm2[L-1]+Mod)%Mod;sm2=(sm2-1ll*Seq[i]*Seq[i]%Mod+Mod)%Mod;sm2=(sm2+1ll*key*key%Mod)%Mod;
-	    //cout<<ae<<" "<<sm<<" "<<sm2<<endl;
 	    Ans[id]=(Ans[id]+sm2)%Mod;
 	    Ans[id]=(Ans[id]-2ll*ae*sm%Mod+Mod)%Mod;
 	    Ans[id]=(Ans[id]+1ll*ae*ae%Mod*(R-L+1)%Mod)%Mod;
-
-	    /*
-	    for (int k=1;Sn[k].l<L;k++) cout<<"["<<Sn[k].l<<" "<<Sn[k].r<<"]("<<C(Sn[k])<<") ";cout<<"{";
-	    cout<<"["<<L<<" "<<R<<"]("<<(double)(Sml[R]-Sml[L-1]-Seq[i]+key)/(double)(R-L+1)<<")} ";
-	    for (int k=revtop;k>=1;k--) if (Srev[k].r>R) cout<<"["<<Srev[k].l<<" "<<Srev[k].r<<"]("<<C(Srev[k])<<") ";cout<<endl;
-
-	    swap(Seq[i],key);
-	    int Ans=0;
-	    for (int k=1;Sn[k].l<L;k++) Ans=(Ans+brute(Sn[k].l,Sn[k].r))%Mod;
-	    Ans=(Ans+brute(L,R))%Mod;
-	    for (int k=1;Srev[k].r>R;k++) Ans=(Ans+brute(Srev[k].l,Srev[k].r))%Mod;
-	    cout<<"A:"<<Ans<<endl;
-	    swap(Seq[i],key);
-	    //*/
-	}
 	}
 	
 	StackData now;now.Init(i,i);
@@ -127,7 +104,6 @@ bool cmp(StackData A,int l2,ll s2){
 }
 bool cmp(int l1,ll s1,int l2,ll s2){
     if (l1<=0||l2<=0) return 1;
-    //cout<<"cmp:"<<l1<<" "<<s1<<" "<<l2<<" "<<s2<<endl;
     assert(l1>=0);assert(s1>=0);assert(l2>=0);assert(s2>=0);
     return s1*l2<=s2*l1;
 }
@@ -146,10 +122,9 @@ int BinaryLeft(int x,int key,int pr){
     int l=1,r=top,L=1;
     while (l<=r){
 	int mid=(l+r)>>1,pl=Sn[mid].l;
-	if (cmp(Sn[mid-1],pr-pl+1,Sml[pr]-Sml[pl-1]+key)) L=pl,l=mid+1;//,cout<<"L-Mr"<<endl;
-	else r=mid-1;//,cout<<"L-Ml"<<endl;
+	if (cmp(Sn[mid-1],pr-pl+1,Sml[pr]-Sml[pl-1]+key)) L=pl,l=mid+1;
+	else r=mid-1;
     }
-    //cout<<"BL:"<<x<<" "<<key<<" "<<pr<<":"<<L<<endl;
     return L;
 }
 int BinaryRight(int x,int key){
@@ -160,11 +135,9 @@ int BinaryRight(int x,int key){
     while (l<=r){
 	int mid=(l+r)>>1,pr=Srev[mid].r;
 	pl=BinaryLeft(x,key,pr);
-	//cout<<"c:"<<pl<<" "<<pr<<" "<<mid<<" "<<Srev[mid-1].l<<" "<<Srev[mid-1].r<<endl;
-	if (cmp(pr-pl+1,Sml[pr]-Sml[pl-1]+key,Srev[mid-1])) R=pr,l=mid+1;//,cout<<"R-Mr"<<endl;
-	else r=mid-1;//,cout<<"R-Ml"<<endl;
+	if (cmp(pr-pl+1,Sml[pr]-Sml[pl-1]+key,Srev[mid-1])) R=pr,l=mid+1;
+	else r=mid-1;
     }
-    //cout<<"BR:"<<x<<" "<<key<<":"<<R<<endl;
     return R;
 }
 double C(StackData A){

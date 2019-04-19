@@ -61,10 +61,7 @@ int main(){
     for (int i=0;i<K;i++) B[i]=1ll*Dw[(1ll*i*(i-1)/2)%K]*(Base*MPow(Tr*Dw[i]+I,L)).T[1][Y]%P;
 
     reverse(&B[0],&B[K+1]);int N=1;while (N<=K+K+K) N<<=1;
-    //cout<<"A:";for (int i=0;i<N;i++) cout<<A[i]<<" ";cout<<endl;
-    //for (int i=0;i<N;i++) cout<<B[i]<<" ";cout<<endl;
     Mul(N,A,B);int invk=QPow(K,P-2);
-    //for (int i=0;i<N;i++) cout<<A[i]<<" ";cout<<endl;
     for (int i=0;i<K;i++){
 	int mul=A[i+K];
 	mul=1ll*mul*invk%P*Dw[(1ll*i*(i-1)/2)%K]%P;
@@ -155,21 +152,10 @@ void Mul(int len,int *A,int *B){
 	a[i]=((Complex){A[i]%M,0});b[i]=((Complex){A[i]/M,0});
 	c[i]=((Complex){B[i]%M,0});d[i]=((Complex){B[i]/M,0});
     }
-
-    //cout<<"A:";for (int i=0;i<10;i++) cout<<A[i]<<" ";cout<<endl;
-    //cout<<"B:";for (int i=0;i<10;i++) cout<<B[i]<<" ";cout<<endl;
-    //cout<<"a:";for (int i=0;i<10;i++) cout<<a[i]<<" ";cout<<endl;
-    //cout<<"b:";for (int i=0;i<10;i++) cout<<b[i]<<" ";cout<<endl;
-    //cout<<"c:";for (int i=0;i<10;i++) cout<<c[i]<<" ";cout<<endl;
-    //cout<<"d:";for (int i=0;i<10;i++) cout<<d[i]<<" ";cout<<endl;
     
     FFT(a,len,1);FFT(b,len,1);FFT(c,len,1);FFT(d,len,1);
     for (int i=0;i<len;i++) e[i]=a[i]*c[i],f[i]=a[i]*d[i]+b[i]*c[i],g[i]=b[i]*d[i];
     FFT(e,len,-1);FFT(f,len,-1);FFT(g,len,-1);
-
-    //cout<<"e:";for (int i=0;i<10;i++) cout<<e[i]<<" ";cout<<endl;
-    //cout<<"f:";for (int i=0;i<10;i++) cout<<f[i]<<" ";cout<<endl;
-    //cout<<"g:";for (int i=0;i<10;i++) cout<<g[i]<<" ";cout<<endl;
     
     for (int i=0;i<len;i++){
 	A[i]=((ll)e[i].x)%P;
