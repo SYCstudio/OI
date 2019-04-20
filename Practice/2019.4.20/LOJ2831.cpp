@@ -26,14 +26,12 @@ void Add(int p,int key);
 int Sum(int p);
 
 int main(){
-    freopen("95.in","r",stdin);freopen("out","w",stdout);
     scanf("%d",&n);for (int i=1;i<=n;i++) scanf("%d",&Val[i]),Num[i]=Val[i];
     sort(&Num[1],&Num[n+1]);num=unique(&Num[1],&Num[n+1])-Num-1;
     for (int i=1;i<=n;i++) S[i].cov=Val[i]=lower_bound(&Num[1],&Num[num+1],Val[i])-Num,S[i].siz=1;
     for (int i=1;i<n;i++){
 	int a,b;scanf("%d%d",&a,&b);
 	S[b].fa=a;Access(b);
-	if (i%10==0) cerr<<i<<endl;
     }
     return 0;
 }
@@ -57,8 +55,9 @@ void Rotate(int x){
     Update(y);return;
 }
 void Splay(int x){
-    static int St[maxN],top,now;
-    now=St[top=1]=x;while (now) St[++top]=now=S[now].fa;
+    static int St[maxN],top,now;now=x;top=1;St[1]=now;
+    while (!Isroot(now)) St[++top]=now=S[now].fa;
+    
     while (top) PushDown(St[top--]);
     while (!Isroot(x)){
 	int y=S[x].fa,z=S[y].fa;
@@ -68,15 +67,13 @@ void Splay(int x){
     Update(x);return;
 }
 void Access(int x){
-    cerr<<"A"<<x<<endl;
     ++tim;ll Ans=0;int key=Val[x],lstx=x,skp=0,mxs=0,prex=x;x=S[x].fa;
     while (x){
-	cerr<<"O";
 	++skp;mxs=max(mxs,S[x].siz);
 	Splay(x);Ans=Ans+1ll*(S[S[x].ch[0]].siz+1)*Sum(S[x].cov-1);
 	Add(S[x].cov,S[S[x].ch[0]].siz+1);S[x].cov=key;
 	S[x].ch[1]=lstx;lstx=x;Update(x);x=S[x].fa;
-    }cerr<<endl;
+    }
     printf("%lld\n",Ans);return;
 }
 void Add(int p,int key){
