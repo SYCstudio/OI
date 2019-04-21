@@ -15,18 +15,21 @@ public:
     }
 };
 
-const int maxN=150;
+const int maxN=310;
 const double INF=1e18;
 const double eps=1e-8;
 
 int n,S;
 double Ds[maxN][maxN];
-Point P[maxN+maxN];
+Point P[maxN];
+pair<double,int> Sorter[maxN];
+int Kth[maxN];
 
 Point operator + (Point A,Point B);
 Point operator - (Point A,Point B);
 Point operator * (Point A,double B);
 Point operator * (double A,Point B);
+bool cmp(Point A,Point B);
 double Cross(Point A,Point B);
 double Dot(Point A,Point B);
 bool same(double A,double B);
@@ -34,8 +37,14 @@ bool check(Point A,Point B);
 double G(Point L1,Point L2,Point P);
 int main(){
     scanf("%d%d",&n,&S);
-    for (int i=1;i<=n;i++) scanf("%lf%lf%lf%lf",&P[i].x,&P[i].y.&P[i+n].x,&P[i+n].y);
-    P[
+    for (int i=1;i<=n;i++){
+	scanf("%lf%lf%lf%lf",&P[i].x,&P[i].y.&P[i+n].x,&P[i+n].y);
+	if (!cmp(P[i],P[i+n])) swap(P[i],P[i+n]);
+    }
+    P[n+n+1]=((Point){S,S});P[n+n+2]=((Point){-S,S});P[n+n+3]=((Point){-S,-S});P[n+n+4]=((Point){S,-S});
+
+    memset(Ds,127,sizeof(Ds));
+    for (int i=1;i<=n;i++) Ds[i][i+n]=0;
 
     for (int i=1;i<=n+5;i++) Ds[i][i]=INF;
     for (int i=1;i<=n+5;i++)
@@ -78,6 +87,12 @@ double Dot(Point A,Point B){
 }
 bool same(double A,double B){
     return fabs(A-b)<eps;
+}
+bool cmp(Point A,Point B){
+    double a1=A.angle(),a2=B.angle();int opt=0;
+    if (a1>a2) swap(A,B),swap(a1,a2),opt^=1;
+    if (a1+Pi+Pi-a2>a2-a1) opt^=1;
+    return opt;
 }
 bool check(Point A,Point B){
     Point C[4];int cnt=0;Point d=B-A;double len=d.len();d/=len;
