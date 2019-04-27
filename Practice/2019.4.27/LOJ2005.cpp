@@ -9,8 +9,8 @@ typedef long long ll;
 class SegmentData{
 public:
     int sz,t1,t2,l,r;
-    ll sxy,sx,sx2,sy;
-    ll CovS,CovT,PS,PT;
+    double sxy,sx,sx2,sy;
+    double CovS,CovT,PS,PT;
     SegmentData(){
 	t1=t2=CovS=CovT=PS=PT=0;return;
     }
@@ -21,19 +21,20 @@ const int maxN=101000;
 int n,m;
 int Ix[maxN],Iy[maxN];
 SegmentData S[maxN<<2];
-ll Sm[maxN],Sm2[maxN];
+double Sm[maxN],Sm2[maxN];
 
 SegmentData operator + (SegmentData A,SegmentData B);
 void Build(int x,int l,int r);
 void PushDown(int x);
-void Plus(int x,ll s,ll t);
-void Cover(int x,ll s,ll t);
-void ModifyP(int x,int l,int r,int ql,int qr,ll s,ll t);
-void ModifyS(int x,int l,int r,int ql,int qr,ll s,ll t);
+void Plus(int x,double s,double t);
+void Cover(int x,double s,double t);
+void ModifyP(int x,int l,int r,int ql,int qr,double s,double t);
+void ModifyS(int x,int l,int r,int ql,int qr,double s,double t);
 SegmentData Query(int x,int l,int r,int ql,int qr);
 double Calc(SegmentData A);
 
 int main(){
+    //freopen("5.in","r",stdin);freopen("out","w",stdout);
     scanf("%d%d",&n,&m);
     for (int i=1;i<=n;i++) Sm[i]=Sm[i-1]+i,Sm2[i]=Sm2[i-1]+1ll*i*i;
     for (int i=1;i<=n;i++) scanf("%d",&Ix[i]);
@@ -78,7 +79,7 @@ void PushDown(int x){
     }
     return;
 }
-void Plus(int x,ll s,ll t){
+void Plus(int x,double s,double t){
     S[x].t1=1;
     S[x].PS+=s;S[x].PT+=t;
     S[x].sxy=S[x].sxy+S[x].sx*t+S[x].sy*s+S[x].sz*s*t;
@@ -87,7 +88,7 @@ void Plus(int x,ll s,ll t){
     S[x].sy=S[x].sy+S[x].sz*t;
     return;
 }
-void Cover(int x,ll s,ll t){
+void Cover(int x,double s,double t){
     S[x].t2=1;S[x].t1=S[x].PS=S[x].PT=0;
     S[x].CovS=s;S[x].CovT=t;
     S[x].sxy=S[x].sz*s*t+(s+t)*(Sm[S[x].r]-Sm[S[x].l-1])+Sm2[S[x].r]-Sm2[S[x].l-1];
@@ -96,7 +97,7 @@ void Cover(int x,ll s,ll t){
     S[x].sy=S[x].sz*t+Sm[S[x].r]-Sm[S[x].l-1];
     return;
 }
-void ModifyP(int x,int l,int r,int ql,int qr,ll s,ll t){
+void ModifyP(int x,int l,int r,int ql,int qr,double s,double t){
     if (l==ql&&r==qr){
 	Plus(x,s,t);return;
     }
@@ -106,7 +107,7 @@ void ModifyP(int x,int l,int r,int ql,int qr,ll s,ll t){
     else ModifyP(ls,l,mid,ql,mid,s,t),ModifyP(rs,mid+1,r,mid+1,qr,s,t);
     S[x]=S[ls]+S[rs];return;
 }
-void ModifyS(int x,int l,int r,int ql,int qr,ll s,ll t){
+void ModifyS(int x,int l,int r,int ql,int qr,double s,double t){
     if (l==ql&&r==qr){
 	Cover(x,s,t);return;
     }
