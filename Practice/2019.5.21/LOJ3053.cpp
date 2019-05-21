@@ -3,6 +3,7 @@
 #include<cstring>
 #include<algorithm>
 #include<vector>
+#include<iostream>
 using namespace std;
 
 const int maxN=1000010;
@@ -23,7 +24,7 @@ public:
 };
 
 vector<int> T[maxN];
-int Dep[maxN],Mx[maxN],Fa[maxN],pref[maxN],id[maxN],invf[maxN],invc=0,seq[maxN],invseq[maxN];
+int Dep[maxN],Mx[maxN],Fa[maxN],pre_f[maxN],id[maxN],invf[maxN],invc=0,seq[maxN],invseq[maxN];
 int _f[maxN*4],*F[maxN*2],*G[maxN],*POS=_f;
 int Ans,Rcf[2][maxN];
 
@@ -35,14 +36,14 @@ namespace CalcF{
     int GET(int u,int p);
     void PUSH(int u,int p,int key);
     void Merge(int u,int v,int len);
-    void dfs1(int u);
+    void dfs(int u);
     void Back(int u);
 }
 namespace CalcG{
     Tag tg[maxN*2];
     int GET(int u,int p);
     void PUSH(int u,int p,int key);
-    void dfs2(int u);
+    void dfs(int u);
 }
 
 int main(){
@@ -96,24 +97,24 @@ namespace CalcF{
 	vector<pair<int,int> > tmp;Tag t=tg[u];
 	for (int i=1;i<=len;i++){
 	    tmp.pb(mp(i,F[u][i]));
-	    int val=GET(v,i);
+	    int val=GET(v,i-1);
 	    if (tg[u].pos==i) F[u][tg[u].pos++]=tg[u].num;
 	    PUSH(u,i,1ll*GET(u,i)*val%Mod);
 	}
-	if (len<m){
+	if (len<L){
 	    int val=GET(v,len);
 	    if (val==0) tg[u].pos=len+1,tg[u].num=Mod-1ll*tg[u].b*tg[u].inv%Mod;
 	    else{
 		int inv=invf[id[v]];tmp.pb(mp(0,F[u][0]));
-		for (int i=0;i<=len;i++) PUSH(u,i,1ll*GET(u,i)*inv%Mod)%Mod;
+		for (int i=0;i<=len;i++) PUSH(u,i,1ll*GET(u,i)*inv%Mod);
 		tg[u].a=1ll*tg[u].a*val%Mod;tg[u].b=1ll*tg[u].b*val%Mod;tg[u].inv=1ll*tg[u].inv*inv%Mod;
 	    }
 	}
 	if (u<=n) Rcy[u].pb(mp(t,tmp));return;
     }
-    void dfs1(int u){
-	if (Mx[u]) F[Mx[u]]=Mx[u]+1,dfs1(Mx[u]),tg[u]=tg[Mx[u]];
-	else F[u][0].Init();
+    void dfs(int u){
+	if (Mx[u]) F[Mx[u]]=F[u]+1,dfs(Mx[u]),tg[u]=tg[Mx[u]];
+	else tg[u].Init();
 	PUSH(u,0,1);
 	for (int i=0,sz=T[u].size();i<sz;i++)
 	    if (T[u][i]!=Fa[u]&&T[u][i]!=Mx[u]){
@@ -139,17 +140,38 @@ namespace CalcG{
     void PUSH(int u,int p,int key){
 	G[u][p]=1ll*(key-tg[u].b+Mod)%Mod*tg[u].inv%Mod;return;
     }
-    void dfs2(int u){
+    void dfs(int u){
 	if (Dep[u]-1-L>=0) PUSH(u,Dep[u]-1-L,1);
-	Ans=(Ans+QPow(1ll*Rcf[1][u]*GET(u,len[u]-1)%Mod,K))%Mod;
-	if (Fa[u]) Ans=(Ans-QPow(1ll*Rcf[0][u]*GET(u,len[u]-1)%Mod,K)+Mod)%Mod;
+	Ans=(Ans+QPow(1ll*Rcf[1][u]*GET(u,Dep[u]-1)%Mod,K))%Mod;
+	if (Fa[u]) Ans=(Ans-QPow(1ll*Rcf[0][u]*(GET(u,Dep[u]-1)+Mod-1)%Mod,K)+Mod)%Mod;
 	if (Mx[u]==0) return;int mxlen=0;
 	for (int i=0,sz=T[u].size();i<sz;i++) if (T[u][i]!=Fa[u]&&T[u][i]!=Mx[u]) mxlen=max(mxlen,Dep[T[u][i]]);
-	F[u+n]=POS;POS+=mxlen;CalcF::tg[u+n].Init();
-	for (int sz=T[u].size();i=sz-1;i>=0;i--)
+	mxlen=min(mxlen,L);
+	F[u+n]=POS;POS+=mxlen+1;CalcF::tg[u+n].Init();CalcF::PUSH(u+n,0,1);
+	for (int sz=T[u].size(),i=sz-1;i>=0;i--)
 	    if (T[u][i]!=Fa[u]&&T[u][i]!=Mx[u]){
 		int v=T[u][i];
 		CalcF::Back(u);G[v]=POS;POS+=Dep[v];
+		for (int j=max(Dep[v]-L-1,0);j<Dep[v];j++)
+		    if (L-Dep[v]+j==-1) G[v][j]=GET(u,Dep[Mx[u]]-Dep[v]+j);
+		    else G[v][j]=1ll*GET(u,Dep[Mx[u]]-Dep[v]+j)*CalcF::GET(u,min(Dep[u]-1,L-Dep[v]+j))%Mod*CalcF::GET(u+n,min(mxlen,L-Dep[v]+j))%Mod;
+		tg[v].Init();CalcF::Merge(u+n,v,min(Dep[v]-1,L));
+		dfs(v);
 	    }
+	int v=Mx[u];G[v]=G[u];tg[v]=tg[u];
+	for (int i=max(Dep[v]-L,0);i<=Dep[v]+mxlen-L-1;i++){
+	    if (tg[v].pos==i) G[v][tg[v].pos++]=tg[v].num;
+	    PUSH(v,i,1ll*GET(v,i)*CalcF::GET(u+n,L-Dep[v]+i)%Mod);
+	}
+	if (mxlen<L){
+	    int mul=1,inv=1;
+	    for (int i=0,sz=T[u].size();i<sz;i++) if (T[u][i]!=Fa[u]&&T[u][i]!=Mx[u]) mul=1ll*mul*pre_f[T[u][i]]%Mod,inv=1ll*inv*invf[id[T[u][i]]]%Mod;
+	    if (mul==0) tg[v].pos=Dep[v]+mxlen-L,tg[v].num=(Mod-1ll*tg[v].b*tg[v].inv%Mod)%Mod;
+	    else{
+		for (int i=max(Dep[v]-L-1,0);i<=Dep[v]+mxlen-L-1;i++) PUSH(v,i,1ll*GET(v,i)*inv%Mod);
+		tg[v].a=1ll*tg[v].a*mul%Mod;tg[v].b=1ll*tg[v].b*mul%Mod;tg[v].inv=1ll*tg[v].inv*inv%Mod;
+	    }
+	}
+	tg[v].b=(tg[v].b+1)%Mod;dfs(v);return;
     }
 }
