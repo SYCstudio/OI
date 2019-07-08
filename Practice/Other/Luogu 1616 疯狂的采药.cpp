@@ -16,13 +16,13 @@ int F[maxT];
 
 int main()
 {
-    cin>>T>>M;
-    for (int i=1;i<=M;i++)
-        cin>>Time[i]>>Value[i];
-    memset(F,0,sizeof(F));
-    for (int i=1;i<=M;i++)
-        for (int j=Time[i];j<=T;j++)
-            F[j]=max(F[j],F[j-Time[i]]+Value[i]);
-    cout<<F[T]<<endl;
-    return 0;
+	cin>>T>>M;
+	for (int i=1; i<=M; i++)
+		cin>>Time[i]>>Value[i];
+	memset(F,0,sizeof(F));
+	for (int i=1; i<=M; i++)
+		for (int j=Time[i]; j<=T; j++)
+			F[j]=max(F[j],F[j-Time[i]]+Value[i]);
+	cout<<F[T]<<endl;
+	return 0;
 }

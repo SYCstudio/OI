@@ -15,36 +15,32 @@ vector<int> Arr;
 
 int main()
 {
-    n=1;
-    while (cin>>Height[n])
-        n++;
-    n--;
-    Arr.clear();
-    vector<int>::iterator Find;
-    for (int i=n;i>=1;i--)
-    {
-        if ((Arr.size()==0)||(Arr[Arr.size()-1]<=Height[i]))
-            Arr.push_back(Height[i]);
-        else
-        {
-            Find=lower_bound(Arr.begin(),Arr.end(),Height[i]);
-            while (*Find==Height[i])
-                Find++;
-            *Find=Height[i];
-        }
-    }
-    cout<<Arr.size()<<endl;
-    Arr.clear();
-    for (int i=1;i<=n;i++)
-    {
-        if ((Arr.size()==0)||(Arr[Arr.size()-1]<Height[i]))
-            Arr.push_back(Height[i]);
-        else
-        {
-            Find=lower_bound(Arr.begin(),Arr.end(),Height[i]);
-            *Find=Height[i];
-        }
-    }
-    cout<<Arr.size()<<endl;
-    return 0;
+	n=1;
+	while (cin>>Height[n])
+		n++;
+	n--;
+	Arr.clear();
+	vector<int>::iterator Find;
+	for (int i=n; i>=1; i--) {
+		if ((Arr.size()==0)||(Arr[Arr.size()-1]<=Height[i]))
+			Arr.push_back(Height[i]);
+		else {
+			Find=lower_bound(Arr.begin(),Arr.end(),Height[i]);
+			while (*Find==Height[i])
+				Find++;
+			*Find=Height[i];
+		}
+	}
+	cout<<Arr.size()<<endl;
+	Arr.clear();
+	for (int i=1; i<=n; i++) {
+		if ((Arr.size()==0)||(Arr[Arr.size()-1]<Height[i]))
+			Arr.push_back(Height[i]);
+		else {
+			Find=lower_bound(Arr.begin(),Arr.end(),Height[i]);
+			*Find=Height[i];
+		}
+	}
+	cout<<Arr.size()<<endl;
+	return 0;
 }

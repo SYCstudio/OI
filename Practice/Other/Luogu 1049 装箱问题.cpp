@@ -14,13 +14,13 @@ int F[maxV];
 
 int main()
 {
-    cin>>V>>N;
-    for (int i=1;i<=N;i++)
-        cin>>weight[i];
-    memset(F,0,sizeof(F));
-    for (int i=1;i<=N;i++)
-        for (int j=V;j>=weight[i];j--)
-            F[j]=max(F[j],F[j-weight[i]]+weight[i]);
-    cout<<V-F[V]<<endl;
-    return 0;
+	cin>>V>>N;
+	for (int i=1; i<=N; i++)
+		cin>>weight[i];
+	memset(F,0,sizeof(F));
+	for (int i=1; i<=N; i++)
+		for (int j=V; j>=weight[i]; j--)
+			F[j]=max(F[j],F[j-weight[i]]+weight[i]);
+	cout<<V-F[V]<<endl;
+	return 0;
 }

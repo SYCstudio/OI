@@ -15,34 +15,44 @@ int Sz[maxN],Cnt[maxN];
 void Add_Edge(int u,int v);
 void dfs(int u,int fa);
 
-int main(){
-    scanf("%d",&n);mem(Head,-1);
-    for (int i=1;i<n;i++){
-	int u,v;scanf("%d%d",&u,&v);
-	Add_Edge(u,v);Add_Edge(v,u);
-    }
-    dfs(1,1);
+int main()
+{
+	scanf("%d",&n);
+	mem(Head,-1);
+	for (int i=1; i<n; i++) {
+		int u,v;
+		scanf("%d%d",&u,&v);
+		Add_Edge(u,v);
+		Add_Edge(v,u);
+	}
+	dfs(1,1);
 
-    for (int i=1;i<=n;i++)
-	if (n%i==0)
-	for (int j=i+i;j<=n;j+=i)
-	    Cnt[i]+=Cnt[j];
+	for (int i=1; i<=n; i++)
+		if (n%i==0)
+			for (int j=i+i; j<=n; j+=i)
+				Cnt[i]+=Cnt[j];
 
-    int Ans=0;
-    for (int i=1;i<=n;i++)
-	if (n%i==0&&Cnt[i]==n/i) ++Ans;
-    printf("%d\n",Ans);return 0;
+	int Ans=0;
+	for (int i=1; i<=n; i++)
+		if (n%i==0&&Cnt[i]==n/i) ++Ans;
+	printf("%d\n",Ans);
+	return 0;
 }
 
-void Add_Edge(int u,int v){
-    Next[++edgecnt]=Head[u];Head[u]=edgecnt;V[edgecnt]=v;
-    return;
+void Add_Edge(int u,int v)
+{
+	Next[++edgecnt]=Head[u];
+	Head[u]=edgecnt;
+	V[edgecnt]=v;
+	return;
 }
-void dfs(int u,int fa){
-    Sz[u]=1;
-    for (int i=Head[u];i!=-1;i=Next[i])
-	if (V[i]!=fa) dfs(V[i],u),Sz[u]+=Sz[V[i]];
-    ++Cnt[Sz[u]];return;
+void dfs(int u,int fa)
+{
+	Sz[u]=1;
+	for (int i=Head[u]; i!=-1; i=Next[i])
+		if (V[i]!=fa) dfs(V[i],u),Sz[u]+=Sz[V[i]];
+	++Cnt[Sz[u]];
+	return;
 }
 /*
 6

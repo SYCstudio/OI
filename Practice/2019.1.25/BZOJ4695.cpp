@@ -13,7 +13,8 @@ const int maxN=505000;
 const int inf=2147483647;
 const ll INF=2000000000;
 
-class SegmentData{
+class SegmentData
+{
 public:
 	int mx,smx,mn,smn,pls,mxt,mnt,sz;
 	ll sum;
@@ -33,13 +34,17 @@ void Max(int x,int l,int r,int ql,int qr,ll k);
 void Min(int x,int l,int r,int ql,int qr,ll k);
 ll Query(int x,int l,int r,int ql,int qr,int opt);
 
-int main(){
+int main()
+{
 	//freopen("15.in","r",stdin);freopen("out","w",stdout);
-	scanf("%d",&n);for (int i=1;i<=n;i++) scanf("%d",&A[i]);
-	Build(1,1,n);scanf("%d",&m);
-	while (m--){
+	scanf("%d",&n);
+	for (int i=1; i<=n; i++) scanf("%d",&A[i]);
+	Build(1,1,n);
+	scanf("%d",&m);
+	while (m--) {
 		//cout<<"running on :"<<m<<endl;
-		int opt,l,r,x;scanf("%d%d%d",&opt,&l,&r);
+		int opt,l,r,x;
+		scanf("%d%d%d",&opt,&l,&r);
 		if (opt<=3) scanf("%d",&x);
 		if (opt==1) Add(1,1,n,l,r,x);
 		else if (opt==2) Max(1,1,n,l,r,x);
@@ -50,21 +55,30 @@ int main(){
 	}
 	return 0;
 }
-void Build(int x,int l,int r){
+void Build(int x,int l,int r)
+{
 	S[x].sz=r-l+1;
-	if (l==r){
-		S[x].mx=S[x].mn=S[x].sum=A[l];S[x].mxt=S[x].mnt=1;
-		S[x].smx=-INF;S[x].smn=INF;return;
+	if (l==r) {
+		S[x].mx=S[x].mn=S[x].sum=A[l];
+		S[x].mxt=S[x].mnt=1;
+		S[x].smx=-INF;
+		S[x].smn=INF;
+		return;
 	}
 	int mid=(l+r)>>1;
-	Build(ls,l,mid);Build(rs,mid+1,r);
-	Update(x);return;
+	Build(ls,l,mid);
+	Build(rs,mid+1,r);
+	Update(x);
+	return;
 }
-void Update(int x){
-	S[x].mx=max(S[ls].mx,S[rs].mx);S[x].mn=min(S[ls].mn,S[rs].mn);
+void Update(int x)
+{
+	S[x].mx=max(S[ls].mx,S[rs].mx);
+	S[x].mn=min(S[ls].mn,S[rs].mn);
 	S[x].mxt=(S[x].mx==S[ls].mx)*S[ls].mxt+(S[x].mx==S[rs].mx)*S[rs].mxt;
 	S[x].mnt=(S[x].mn==S[ls].mn)*S[ls].mnt+(S[x].mn==S[rs].mn)*S[rs].mnt;
-	S[x].smx=max(S[ls].smx,S[rs].smx);S[x].smn=min(S[ls].smn,S[rs].smn);
+	S[x].smx=max(S[ls].smx,S[rs].smx);
+	S[x].smn=min(S[ls].smn,S[rs].smn);
 	if (S[x].mx!=S[ls].mx) S[x].smx=max(S[x].smx,S[ls].mx);
 	if (S[x].mx!=S[rs].mx) S[x].smx=max(S[x].smx,S[rs].mx);
 	if (S[x].mn!=S[ls].mn) S[x].smn=min(S[x].smn,S[ls].mn);
@@ -72,28 +86,38 @@ void Update(int x){
 	S[x].sum=S[ls].sum+S[rs].sum;
 	return;
 }
-void Plus(int x,ll k){
-	S[x].sum+=k*S[x].sz;S[x].mx+=k;S[x].mn+=k;S[x].pls+=k;
+void Plus(int x,ll k)
+{
+	S[x].sum+=k*S[x].sz;
+	S[x].mx+=k;
+	S[x].mn+=k;
+	S[x].pls+=k;
 	if (S[x].smx!=-INF) S[x].smx+=k;
 	if (S[x].smn!=INF) S[x].smn+=k;
 	return;
 }
-void Pushmx(int x,ll k){
+void Pushmx(int x,ll k)
+{
 	if (S[x].mn==S[x].mx) S[x].mn=k;
 	if (S[x].smn==S[x].mx) S[x].smn=k;
 	S[x].sum+=(k-S[x].mx)*S[x].mxt;
-	S[x].mx=k;return;
+	S[x].mx=k;
+	return;
 }
-void Pushmn(int x,ll k){
+void Pushmn(int x,ll k)
+{
 	if (S[x].mx==S[x].mn) S[x].mx=k;
 	if (S[x].smx==S[x].mn) S[x].smx=k;
 	S[x].sum+=(k-S[x].mn)*S[x].mnt;
-	S[x].mn=k;return;
+	S[x].mn=k;
+	return;
 }
-void PushDown(int x){
+void PushDown(int x)
+{
 	//cout<<"PushDown:"<<x<<endl;
-	if (S[x].pls){
-		Plus(ls,S[x].pls);Plus(rs,S[x].pls);
+	if (S[x].pls) {
+		Plus(ls,S[x].pls);
+		Plus(rs,S[x].pls);
 		S[x].pls=0;
 	}
 	if (S[x].mx<S[ls].mx) Pushmx(ls,S[x].mx);
@@ -102,17 +126,22 @@ void PushDown(int x){
 	if (S[x].mn>S[rs].mn) Pushmn(rs,S[x].mn);
 	return;
 }
-void Add(int x,int l,int r,int ql,int qr,ll k){
-	if (l==ql&&r==qr){
-		Plus(x,k);return;
+void Add(int x,int l,int r,int ql,int qr,ll k)
+{
+	if (l==ql&&r==qr) {
+		Plus(x,k);
+		return;
 	}
-	PushDown(x);int mid=(l+r)>>1;
+	PushDown(x);
+	int mid=(l+r)>>1;
 	if (qr<=mid) Add(ls,l,mid,ql,qr,k);
 	else if (ql>=mid+1) Add(rs,mid+1,r,ql,qr,k);
 	else Add(ls,l,mid,ql,mid,k),Add(rs,mid+1,r,mid+1,qr,k);
-	Update(x);return;
+	Update(x);
+	return;
 }
-void Max(int x,int l,int r,int ql,int qr,ll k){
+void Max(int x,int l,int r,int ql,int qr,ll k)
+{
 	if (S[x].mn>=k) return;
 	//cout<<"Max:"<<x<<" "<<ql<<" "<<qr<<" "<<k<<endl;
 	/*
@@ -122,19 +151,23 @@ void Max(int x,int l,int r,int ql,int qr,ll k){
 		return;
 	}
 	//*/
-	
+
 	if (l==ql&&r==qr)
-		if (k<S[x].smn){
-			Pushmn(x,k);return;
+		if (k<S[x].smn) {
+			Pushmn(x,k);
+			return;
 		}
 	//*/
-	int mid=(l+r)>>1;PushDown(x);
+	int mid=(l+r)>>1;
+	PushDown(x);
 	if (qr<=mid) Max(ls,l,mid,ql,qr,k);
 	else if (ql>=mid+1) Max(rs,mid+1,r,ql,qr,k);
 	else Max(ls,l,mid,ql,mid,k),Max(rs,mid+1,r,mid+1,qr,k);
-	Update(x);return;
+	Update(x);
+	return;
 }
-void Min(int x,int l,int r,int ql,int qr,ll k){
+void Min(int x,int l,int r,int ql,int qr,ll k)
+{
 	if (S[x].mx<=k) return;
 	/*
 	if (l==r){
@@ -143,24 +176,29 @@ void Min(int x,int l,int r,int ql,int qr,ll k){
 		return;
 	}
 	//*/
-	
+
 	if (l==ql&&r==qr)
-		if (S[x].smx<k){
-			Pushmx(x,k);return;
+		if (S[x].smx<k) {
+			Pushmx(x,k);
+			return;
 		}
 	//*/
-	int mid=(l+r)>>1;PushDown(x);
+	int mid=(l+r)>>1;
+	PushDown(x);
 	if (qr<=mid) Min(ls,l,mid,ql,qr,k);
 	else if (ql>=mid+1) Min(rs,mid+1,r,ql,qr,k);
 	else Min(ls,l,mid,ql,mid,k),Min(rs,mid+1,r,mid+1,qr,k);
-	Update(x);return;
+	Update(x);
+	return;
 }
-ll Query(int x,int l,int r,int ql,int qr,int opt){
+ll Query(int x,int l,int r,int ql,int qr,int opt)
+{
 	if (l==ql&&r==qr)
 		if (opt==1) return S[x].sum;
 		else if (opt==2) return S[x].mx;
 		else return S[x].mn;
-	int mid=(l+r)>>1;PushDown(x);
+	int mid=(l+r)>>1;
+	PushDown(x);
 	if (qr<=mid) return Query(ls,l,mid,ql,qr,opt);
 	else if (ql>=mid+1) return Query(rs,mid+1,r,ql,qr,opt);
 	else if (opt==1) return Query(ls,l,mid,ql,mid,opt)+Query(rs,mid+1,r,mid+1,qr,opt);
