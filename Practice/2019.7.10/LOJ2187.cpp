@@ -1,14 +1,18 @@
 #include<bits/stdc++.h>
 using namespace std;
 
+#define pb push_back
 const int maxN=505000;
 
 class SplayData{
 public:
 	int fa,ch[2],key,lz,c[4];
+	bool check(int opt){
+		return c[0]+c[1]+c[2]+c[3]-c[opt];
+	}
 };
 
-int n,Fa[maxN*4],Key[maxN];
+int n,Fa[maxN*4],Key[maxN*4];
 vector<int> T[maxN];
 SplayData S[maxN];
 
@@ -32,18 +36,47 @@ int main(){
 
 	int Q;scanf("%d",&Q);
 	while (Q--){
-		int id,key;scanf("%d%d",&id,&key);
-		if (Key[id]!=key){
-			key=key-Key[id];
-			int fa=Fa[id];
-			Access(fa);Splay(fa);
-			if (key==1){
-				if (S[fa].c[1]){
-					
+		int id;scanf("%d",&id);
+		int key=Key[id]^1;
+		key=key-Key[id];Key[id]+=key;
+		int fa=Fa[id];
+		Access(fa);Splay(fa);
+		if (key==1){
+			if (S[fa].check(1)){
+				int now=fa;
+				while (1){
+					PushDown(now);
+					if (S[now].ch[1]&&S[S[now].ch[1]].check(1)) now=S[now].ch[1];
+					else if (S[now].key!=1) break;
+					else now=S[now].ch[0];
 				}
+				Splay(now);
+				if (S[now].ch[1]) Plus(S[now].ch[1],1);
+				if (S[now].key<3) ++S[now].key;
+				Update(now);
 			}
+			else Plus(fa,1);
 		}
+		else{
+			if (S[fa].check(2)){
+				int now=fa;
+				while (1){
+					PushDown(now);
+					if (S[now].ch[1]&&S[S[now].ch[1]].check(2)) now=S[now].ch[1];
+					else if (S[now].key!=2) break;
+					else now=S[now].ch[0];
+				}
+				Splay(now);
+				if (S[now].ch[1]) Plus(S[now].ch[1],-1);
+				if (S[now].key>0) --S[now].key;
+				Update(now);
+			}
+			else Plus(fa,-1);
+		}
+		Splay(1);
+		printf("%d\n",S[1].key>>1);
 	}
+	return 0;
 }
 void dfs_init(int u){
 	for (int i=0;i<T[u].size();i++){
@@ -69,13 +102,14 @@ void Update(int x){
 }
 void Plus(int x,int key){
 	S[x].key+=key;S[x].lz+=key;
-	if (key<0){
-		for (int i=key;i<4;i++) S[x].c[i-key]=S[x].i;
-		for (int i=4-key;i<4;i++) S[x].c[i]=0;
-	}
 	if (key>0){
 		for (int i=3;i>=key;i--) S[x].c[i]=S[x].c[i-key];
 		for (int i=0;i<key;i++) S[x].c[i]=0;
+	}
+	if (key<0){
+		key=-key;
+		for (int i=key;i<=3;i++) S[x].c[i-key]=S[x].c[i];
+		for (int i=4-key;i<=3;i++) S[x].c[i]=0;
 	}
 	return;
 }
@@ -96,7 +130,7 @@ void Rotate(int x){
 }
 void Splay(int x){
 	static int St[maxN];int top=1,now=x;St[1]=now;
-	while (Isroot(now)) St[++top]=now=S[now].fa;
+	while (!Isroot(now)) St[++top]=now=S[now].fa;
 	while (top) PushDown(St[top--]);
 	while (!Isroot(x)){
 		int y=S[x].fa,z=S[y].fa;
