@@ -14,15 +14,15 @@ class InputData{
 
 int n, Q, ncnt = 0, Num[maxN], S0[maxN*4], S1[maxN*4], Bucket[maxN];
 InputData In[maxN];
-int Ans,tpr;
+int Ansleft, Ansright, tpr;
 
 void Modify(int x, int l, int r, int p, int key,int opt);
 void Query(int x, int l, int r, int lsum, int rsum);
-bool QueryT(int x, int l, int r);
+void QueryT(int x, int l, int r, int lsum, int rsum);
 
 int main() {
-    freopen("in", "r", stdin);
-    freopen("out", "w", stdout);
+    //freopen("in", "r", stdin);
+    //freopen("out", "w", stdout);
     scanf("%d", &Q);
     for (int i = 1; i <= Q; i++) {
         scanf("%d", &In[i].a);
@@ -57,10 +57,11 @@ int main() {
         if ((cnt[0] == 0) || (cnt[1] == 0)) printf("Peace\n");
         else{
             tpr = inf;Query(1, 1, ncnt, 0, 0);
-            if (Ans != 0) {
+            if (min(Ansleft, Ansright) != 0) {
                 //while (Bucket[tpr] == 0) ++tpr;
-                //QueryT(1,1,ncnt);
-                printf("%d %lld\n", Num[tpr], 1ll * Ans * 2);
+                QueryT(1, 1, ncnt, 0, 0);
+                //cout<<tpr<<endl;
+                printf("%d %lld\n", Num[tpr], 1ll * min(Ansleft, Ansright) * 2);
             }
             else printf("Peace\n");
         }
@@ -81,7 +82,9 @@ void Modify(int x, int l, int r, int p, int key, int opt) {
 void Query(int x, int l, int r, int lsum, int rsum) {
     //cout<<"Q:"<<x<<" "<<l<<" "<<r<<" "<<lsum<<" "<<rsum<<" "<<S0[x]<<" "<<S1[x]<<endl;
     if (l == r){
-        Ans = min(lsum + S0[x], rsum + S1[x]);
+        Ansleft = lsum + S0[x];
+        Ansright = rsum + S1[x];
+        //Ans = min(lsum + S0[x], rsum + S1[x]);
         tpr = l;
         return;
     }
@@ -92,21 +95,11 @@ void Query(int x, int l, int r, int lsum, int rsum) {
     return;
 }
 
-bool QueryT(int x,int l,int r){
-    if (l == r) {
-        if (S1[x] == 0) return 0;
-        else {
-            tpr = l;
-            return 1;
-        }
-    }
+void QueryT(int x, int l, int r, int lsum, int rsum) {
     int mid = (l+r)>>1;
-    if (mid < tpr) return QueryT(rson, mid+1, r);
-    else {
-        int opt = QueryT(lson, l, mid);
-        if (opt == 1) return 1;
-        if (S1[rson] == 0) return 0;
-        QueryT(rson, mid+1, r);
-        return 1;
-    }
+    if (rsum + S1[rson] + Bucket[mid] == Ansright) tpr=mid;
+    if (l == r) return;
+    if (rsum + S1[rson] + Bucket[mid] >=Ansright) QueryT(rson, mid+1, r, lsum + S0[lson], rsum);
+    else QueryT(lson, l, mid, lsum, rsum + S1[rson]);
+    return;
 }
